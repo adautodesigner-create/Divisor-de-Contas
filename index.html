@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Divisor de Contas</title>
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--text:#182230;--muted:#687386;--primary:#2463eb;--danger:#dc3545;--border:#dfe5ef;--success:#16834b}
+:root{--bg:#f5f7fb;--card:#fff;--text:#182230;--muted:#687386;--primary:#2463eb;--danger:#dc3545;--border:#dfe5ef;--success:#16834b;--soft:#f7f9fc;--soft2:#f0f3f7;--input:#fff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
 .container{max-width:1050px;margin:auto;padding:20px;font-size:17px}.header{margin-bottom:18px}.header h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.2rem)}.header p{margin:0;color:var(--muted)}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 18px #1822300b}
 h2{font-size:1.05rem;margin:0 0 14px}h3{font-size:.95rem;margin:14px 0 8px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:#344054}input,select,button{font:inherit}input,select{width:100%;padding:13px;font-size:1rem;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text)}
-button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:700}.primary{background:var(--primary);color:#fff}.secondary{background:#eaf0ff;color:#1748b8}.ghost{background:#f0f3f7;color:#344054}.danger{background:#fff0f0;color:var(--danger)}.small{padding:9px 11px;font-size:.88rem}.qty-control{display:flex;align-items:center;gap:6px}.qty-control button{width:42px;height:42px;padding:0;font-size:1.35rem}.qty-control input{max-width:90px;text-align:center}
+label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:#344054}input,select,button{font:inherit}input,select{width:100%;padding:13px;font-size:1rem;border:1px solid var(--border);border-radius:10px;background:var(--input);color:var(--text)}
+button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:700}.primary{background:var(--primary);color:#fff}.secondary{background:#eaf0ff;color:#1748b8}.ghost{background:var(--soft2);color:var(--text)}.danger{background:#fff0f0;color:var(--danger)}.small{padding:9px 11px;font-size:.88rem}.qty-control{display:flex;align-items:center;gap:6px}.qty-control button{width:42px;height:42px;padding:0;font-size:1.35rem}.qty-control input{max-width:90px;text-align:center}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.person-row,.item-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:8px}
-.persons{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.person-chip{display:flex;align-items:center;gap:7px;padding:9px;background:#f7f9fc;border:1px solid var(--border);border-radius:10px;font-size:.9rem}
-.item{border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px}.item-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.item-title{font-weight:800}.muted{color:var(--muted);font-size:.85rem}.checks{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.checks label{margin:0;display:flex;gap:5px;align-items:center;padding:7px 9px;background:#f5f7fb;border-radius:8px;font-weight:600}
-.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.metric{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:12px}.metric span{display:block;color:var(--muted);font-size:.78rem}.metric strong{font-size:1.15rem}
+.persons{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.person-chip{display:flex;align-items:center;gap:7px;padding:9px;background:var(--soft);border:1px solid var(--border);border-radius:10px;font-size:.9rem}
+.item{border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px}.item-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.item-title{font-weight:800}.muted{color:var(--muted);font-size:.85rem}.checks{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.checks label{margin:0;display:flex;gap:5px;align-items:center;padding:7px 9px;background:var(--soft);border-radius:8px;font-weight:600}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.metric{background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:12px}.metric span{display:block;color:var(--muted);font-size:.78rem}.metric strong{font-size:1.15rem}
 .result{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.result:last-child{border-bottom:0}.amount{font-weight:900;font-variant-numeric:tabular-nums}.notice{padding:10px 12px;border-radius:10px;background:#eefaf3;color:var(--success);font-size:.88rem;margin-top:12px}
 .empty{color:var(--muted);padding:12px 0;font-size:.9rem}
 /* Tela de boas-vindas e tutorial */
@@ -38,9 +38,22 @@ button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:
 .welcome-footer button{flex:1;min-width:145px}
 .tutorial-nav{display:flex;gap:8px;margin-top:18px}
 .tutorial-nav button{flex:1}
-.help-button{margin-top:8px}
+.help-button{margin-top:8px}.theme-button{font-size:1rem;min-width:40px}.profile-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.profile-list{display:grid;gap:8px;margin-top:12px}.profile-row{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--soft)}.profile-row .profile-name{font-weight:800}.presence-list{display:grid;gap:7px;margin-top:10px}.presence-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--soft)}.help-button{margin-top:8px}.save-status{font-size:.82rem;color:var(--muted)}
+.profile-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:90}
+.profile-panel{display:none;position:fixed;z-index:100;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px,calc(100% - 28px));max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.28);margin:0}
+.profile-panel.open{display:block}
+.profile-backdrop.open{display:block}
+body.modal-open{overflow:hidden}
+@media(max-width:620px){
+  .profile-panel{width:calc(100% - 20px);max-height:calc(100vh - 24px)}
+}
+
+@media(max-width:620px){#saveStatus{width:100%}}
 @media(max-width:620px){.welcome-modal{padding:20px;border-radius:18px}.welcome-footer{align-items:stretch}.welcome-footer button{width:100%}}
 
+body[data-theme="dark"]{--bg:#111318;--card:#1b1e25;--text:#f1f3f7;--muted:#aab2c0;--border:#353b48;--soft:#242934;--soft2:#2d3340;--input:#20242d;--danger:#ff9da6}
+body[data-theme="dark"] .secondary{background:#263b70;color:#dce7ff}
+body[data-theme="dark"] .notice{background:#173b2b;color:#9af0bf}
 @media(max-width:620px){.container{padding:12px}.card{padding:14px;border-radius:15px}.grid,.grid-3,.summary{grid-template-columns:1fr}.item-top{flex-direction:column}.actions button{flex:1}.result{grid-template-columns:1fr auto}}
 @media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;break-inside:avoid}.container{max-width:none}}
 </style>
@@ -104,11 +117,18 @@ button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:
   <header class="header">
     <h1>🧾 Divisor de Contas</h1>
     <p>Separe itens individuais, duplas, grupos e taxas. O total de cada pessoa é calculado automaticamente.</p>
-    <button class="ghost small help-button no-print" id="openWelcome">❔ Como usar</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
+      <button class="ghost small help-button no-print" id="openWelcome">❔ Como usar</button>
+      <button class="ghost small theme-button no-print" id="themeToggle" aria-label="Alternar tema">☀️</button>
+      <span class="muted no-print" id="saveStatus" style="font-size:.82rem">💾 Salvo neste dispositivo</span>
+    </div>
   </header>
 
   <section class="card no-print">
-    <h2>1. Pessoas do grupo</h2>
+    <div class="item-top">
+      <h2>1. Pessoas do grupo</h2>
+      <button class="secondary small no-print" id="openProfiles">👥 Pessoas e perfis</button>
+    </div>
     <div class="grid">
       <div><label for="personName">Nome da pessoa</label><input id="personName" placeholder="Ex.: Isabel" maxlength="40"></div>
       <div style="display:flex;align-items:end"><button class="primary" id="addPerson">+ Adicionar pessoa</button></div>
@@ -118,6 +138,28 @@ button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:
       <button class="ghost small" id="examplePeople">Carregar exemplo</button>
       <button class="danger small" id="clearPeople">Limpar pessoas</button>
     </div>
+  </section>
+
+  <div id="profileBackdrop" class="profile-backdrop no-print"></div>
+  <section class="card no-print profile-panel" id="profilePanel" aria-hidden="true">
+    <div class="item-top">
+      <h2>👥 Pessoas e perfis</h2>
+      <button class="ghost small" id="closeProfiles" aria-label="Fechar pessoas e perfis">✕ Fechar</button>
+      <span class="muted" id="activeProfileLabel">Nenhum perfil selecionado</span>
+    </div>
+    <p class="muted">Salve grupos frequentes, como “Grupo dos Invasores”. Depois, carregue o perfil e marque apenas quem está presente nesta saída.</p>
+    <div class="grid">
+      <div><label for="profileSelect">Carregar perfil salvo</label><select id="profileSelect"><option value="">Selecione um perfil</option></select></div>
+      <div style="display:flex;align-items:end"><button class="secondary" id="loadProfile">Carregar perfil</button></div>
+    </div>
+    <div id="presenceList" class="presence-list"></div>
+    <div class="profile-actions">
+      <button class="primary small" id="saveProfile">💾 Salvar perfil atual</button>
+      <button class="ghost small" id="saveProfileChanges" style="display:none">✓ Atualizar perfil</button>
+      <button class="danger small" id="deleteProfile">Excluir perfil</button>
+    </div>
+    <div class="muted" style="margin-top:8px">Você pode editar a lista atual sem alterar o perfil salvo. Só clique em “Atualizar perfil” quando quiser guardar as mudanças.</div>
+    <div id="profileList" class="profile-list"></div>
   </section>
 
   <section class="card no-print">
@@ -178,21 +220,130 @@ button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:
     <div id="balanceNotice" class="notice" style="display:none"></div>
     <div class="actions no-print">
       <button class="primary" id="printResult">🖨️ Imprimir / Salvar PDF</button>
-      <button class="ghost" id="resetAll">↺ Reiniciar tudo</button>
+      <button class="ghost" id="resetAll">＋ Nova conta</button>
     </div>
   </section>
 </div>
 
 <script>
-const state={people:[],items:[],editingIndex:null};
+const state={people:[],roster:[],items:[],editingIndex:null,activeProfile:null};
+const STORAGE_KEY='divisorContasStateV1';
+const PROFILE_KEY='divisorContasProfilesV1';
+const THEME_KEY='divisorContasThemeV1';
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({
+      people:state.people,
+      roster:state.roster,
+      activeProfile:state.activeProfile,
+      items:state.items,
+      feePercent:$('feePercent')?.value ?? 10,
+      feeMode:$('feeMode')?.value ?? 'proportional',
+      extraCharge:$('extraCharge')?.value ?? 0,
+      splitType:$('splitType')?.value ?? 'equal'
+    }));
+    const status=$('saveStatus');
+    if(status)status.textContent='💾 Salvo neste dispositivo';
+  }catch(e){
+    const status=$('saveStatus');
+    if(status)status.textContent='⚠️ Não foi possível salvar';
+  }
+}
+function loadState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if(!saved)return;
+    if(Array.isArray(saved.people))state.people=saved.people;
+    if(Array.isArray(saved.roster))state.roster=saved.roster; else state.roster=[...state.people];
+    if(saved.activeProfile!==undefined)state.activeProfile=saved.activeProfile;
+    if(Array.isArray(saved.items))state.items=saved.items;
+    if(saved.feePercent!==undefined)$('feePercent').value=saved.feePercent;
+    if(saved.feeMode!==undefined)$('feeMode').value=saved.feeMode;
+    if(saved.extraCharge!==undefined)$('extraCharge').value=saved.extraCharge;
+    if(saved.splitType!==undefined)$('splitType').value=saved.splitType;
+  }catch(e){}
+}
+function clearSavedState(){
+  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+}
+
 const $=id=>document.getElementById(id);
 const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const selectedPeople=()=>[...document.querySelectorAll('#participantList input:checked')].map(x=>x.value);
 
+
+function getProfiles(){
+  try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'[]')}catch(e){return []}
+}
+function setProfiles(profiles){
+  try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profiles))}catch(e){}
+}
+function renderProfiles(){
+  const profiles=getProfiles();
+  $('profileSelect').innerHTML='<option value="">Selecione um perfil</option>'+profiles.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} (${p.members.length})</option>`).join('');
+  if(state.activeProfile)$('profileSelect').value=state.activeProfile;
+  $('activeProfileLabel').textContent=state.activeProfile?(profiles.find(p=>p.id===state.activeProfile)?.name||'Perfil selecionado'):'Nenhum perfil selecionado';
+  $('saveProfileChanges').style.display=state.activeProfile?'inline-block':'none';
+  $('profileList').innerHTML=profiles.length?profiles.map(p=>`<div class="profile-row"><span class="profile-name">👥 ${esc(p.name)}</span><span class="muted">${p.members.length} pessoas</span></div>`).join(''):'<div class="empty">Nenhum perfil salvo ainda.</div>';
+}
+function renderPresence(){
+  $('presenceList').innerHTML=state.roster.length?state.roster.map(p=>`<label class="presence-row"><input type="checkbox" ${state.people.includes(p)?'checked':''} onchange="togglePresence('${esc(p).replace(/'/g,"&#39;")}',this.checked)"> <span>${esc(p)}</span></label>`).join(''):'<div class="empty">Cadastre pessoas ou carregue um perfil.</div>';
+}
+function togglePresence(name,checked){
+  if(checked){if(!state.people.includes(name))state.people.push(name)}
+  else{
+    state.people=state.people.filter(p=>p!==name);
+    state.items.forEach(item=>item.participants=item.participants.filter(p=>p!==name));
+  }
+  renderPeople();
+}
+function saveCurrentProfile(update=false){
+  const name=update?(getProfiles().find(p=>p.id===state.activeProfile)?.name||''):(prompt('Nome do perfil (ex.: Grupo dos Invasores):')||'').trim();
+  if(!name)return;
+  const profiles=getProfiles();
+  if(update){
+    if(!state.roster.length)return alert('Adicione pelo menos uma pessoa ao perfil.');
+    const idx=profiles.findIndex(p=>p.id===state.activeProfile);
+    if(idx>=0)profiles[idx].members=[...state.roster];
+  }else{
+    if(!state.roster.length)return alert('Adicione pelo menos uma pessoa ao perfil.');
+    const existing=profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
+    if(existing){
+      if(!confirm('Já existe um perfil com esse nome. Deseja substituir a lista dele?'))return;
+      existing.members=[...state.roster];state.activeProfile=existing.id;
+    }else{
+      const id='profile_'+Date.now();
+      profiles.push({id,name,members:[...state.roster]});
+      state.activeProfile=id;
+    }
+  }
+  setProfiles(profiles);renderProfiles();saveState();
+  alert(update?'Perfil atualizado!':'Perfil salvo!');
+}
+function loadSelectedProfile(){
+  const id=$('profileSelect').value;if(!id)return alert('Selecione um perfil.');
+  if(state.items.length && !confirm('Carregar um perfil vai limpar os itens atuais. Deseja continuar?'))return;
+  const profile=getProfiles().find(p=>p.id===id);if(!profile)return;
+  state.activeProfile=profile.id;
+  state.roster=[...profile.members];
+  state.people=[...profile.members];
+  state.items=[];state.editingIndex=null;
+  renderPeople();renderProfiles();saveState();
+}
+function deleteSelectedProfile(){
+  const id=$('profileSelect').value||state.activeProfile;if(!id)return alert('Selecione um perfil.');
+  const profiles=getProfiles();const profile=profiles.find(p=>p.id===id);
+  if(!profile)return;
+  if(!confirm(`Excluir o perfil "${profile.name}"?`))return;
+  setProfiles(profiles.filter(p=>p.id!==id));
+  if(state.activeProfile===id){state.activeProfile=null}
+  renderProfiles();saveState();
+}
 function renderPeople(){
-  $('peopleList').innerHTML=state.people.length?state.people.map((p,i)=>`<div class="person-chip"><span style="flex:1">${esc(p)}</span><button class="danger small" onclick="removePerson(${i})">×</button></div>`).join(''):'<div class="empty">Nenhuma pessoa adicionada.</div>';
-  renderParticipants();renderItems();calculate();
+  if(!state.roster.length)state.roster=[...state.people];
+  $('peopleList').innerHTML=state.people.length?state.people.map((p,i)=>`<div class="person-chip"><span style="flex:1">${esc(p)}</span><button class="danger small" onclick="removePerson(${i})">×</button></div>`).join(''):'<div class="empty">Nenhuma pessoa presente adicionada.</div>';
+  renderPresence();renderParticipants();renderItems();calculate();
 }
 function renderParticipants(){
   $('participantList').innerHTML=state.people.length?state.people.map(p=>`<label><input type="checkbox" value="${esc(p)}" onchange="renderWeights()"> ${esc(p)}</label>`).join(''):'<span class="empty">Adicione pessoas primeiro.</span>';
@@ -209,12 +360,12 @@ function addPerson(){
   const name=$('personName').value.trim();
   if(!name)return alert('Digite um nome.');
   if(state.people.includes(name))return alert('Essa pessoa já está no grupo.');
-  state.people.push(name);$('personName').value='';
+  state.people.push(name);if(!state.roster.includes(name))state.roster.push(name);$('personName').value='';
 renderPeople();
 }
 function removePerson(i){
   const p=state.people[i];
-  state.people.splice(i,1);
+  const removed=state.people.splice(i,1)[0];state.roster=state.roster.filter(x=>x!==removed);
   state.items.forEach(item=>item.participants=item.participants.filter(x=>x!==p));
   renderPeople();
 }
@@ -253,6 +404,7 @@ function renderItems(){
   }).join(''):'<div class="empty">Nenhum item lançado ainda.</div>';
 }
 function calculate(){
+  saveState();
   const totals=Object.fromEntries(state.people.map(p=>[p,0]));
   let subtotal=0;
   state.items.forEach(it=>{
@@ -299,10 +451,46 @@ $('qtyPlus').onclick=()=>{$('itemQty').value=Math.max(1,(Number($('itemQty').val
 $('qtyMinus').onclick=()=>{$('itemQty').value=Math.max(1,(Number($('itemQty').value)||1)-1)};
 $('itemQty').oninput=()=>{$('itemQty').value=Math.max(1,Math.floor(Number($('itemQty').value)||1))};
 $('splitType').onchange=renderWeights;$('feePercent').oninput=calculate;$('feeMode').onchange=calculate;$('extraCharge').oninput=calculate;
-$('clearPeople').onclick=()=>{if(confirm('Limpar todas as pessoas?')){state.people=[];state.items=[];renderPeople()}};
+$('clearPeople').onclick=()=>{if(confirm('Limpar todas as pessoas?')){state.people=[];state.roster=[];state.items=[];state.activeProfile=null;clearSavedState();renderProfiles();renderPeople()}};
 $('clearItems').onclick=()=>{state.items=[];renderItems();calculate()};
-$('examplePeople').onclick=()=>{state.people=['Isabel','João','Maria','Pedro','Ana'];renderPeople()};
-$('resetAll').onclick=()=>{if(confirm('Reiniciar tudo?')){state.people=[];state.items=[];$('feePercent').value=10;$('extraCharge').value=0;renderPeople()}};
+$('examplePeople').onclick=()=>{state.people=['Isabel','João','Maria','Pedro','Ana'];state.roster=[...state.people];state.activeProfile=null;renderProfiles();renderPeople()};
+$('resetAll').onclick=()=>{if(confirm('Reiniciar tudo?')){state.people=[];state.roster=[];state.items=[];state.activeProfile=null;clearSavedState();renderProfiles();$('feePercent').value=10;$('feeMode').value='proportional';$('extraCharge').value=0;$('personName').value='';$('itemName').value='';$('itemPrice').value='';$('itemQty').value=1;renderPeople()}};
+
+function openProfiles(){
+  $('profilePanel').classList.add('open');
+  $('profileBackdrop').classList.add('open');
+  $('profilePanel').setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+}
+function closeProfiles(){
+  $('profilePanel').classList.remove('open');
+  $('profileBackdrop').classList.remove('open');
+  $('profilePanel').setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+}
+$('openProfiles').onclick=openProfiles;
+$('closeProfiles').onclick=closeProfiles;
+$('profileBackdrop').onclick=closeProfiles;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProfiles()});
+
+
+$('saveProfile').onclick=()=>saveCurrentProfile(false);
+$('saveProfileChanges').onclick=()=>saveCurrentProfile(true);
+$('loadProfile').onclick=loadSelectedProfile;
+$('deleteProfile').onclick=deleteSelectedProfile;
+$('themeToggle').onclick=()=>{
+  const dark=document.body.dataset.theme!=='dark';
+  document.body.dataset.theme=dark?'dark':'light';
+  $('themeToggle').textContent=dark?'🌙':'☀️';
+  try{localStorage.setItem(THEME_KEY,dark?'dark':'light')}catch(e){}
+};
+try{
+  const savedTheme=localStorage.getItem(THEME_KEY)||'light';
+  document.body.dataset.theme=savedTheme;
+  $('themeToggle').textContent=savedTheme==='dark'?'🌙':'☀️';
+}catch(e){}
+renderProfiles();
+
 $('printResult').onclick=()=>window.print();
 $('copyResult').onclick=async()=>{try{await navigator.clipboard.writeText(summaryText());$('copyResult').textContent='✓ Copiado';setTimeout(()=>$('copyResult').textContent='Copiar resumo',1300)}catch(e){prompt('Copie o resumo:',summaryText())}};
 $('shareWhatsapp').onclick=()=>{
@@ -311,6 +499,9 @@ $('shareWhatsapp').onclick=()=>{
   const url='https://wa.me/?text='+encodeURIComponent(text);
   window.open(url,'_blank');
 };
+loadState();
+if(!state.roster.length)state.roster=[...state.people];
+renderProfiles();
 renderPeople();
 
 // Tutorial em 5 telas rápidas
