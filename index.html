@@ -19,15 +19,92 @@ button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:
 .summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.metric{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:12px}.metric span{display:block;color:var(--muted);font-size:.78rem}.metric strong{font-size:1.15rem}
 .result{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.result:last-child{border-bottom:0}.amount{font-weight:900;font-variant-numeric:tabular-nums}.notice{padding:10px 12px;border-radius:10px;background:#eefaf3;color:var(--success);font-size:.88rem;margin-top:12px}
 .empty{color:var(--muted);padding:12px 0;font-size:.9rem}
+/* Tela de boas-vindas e tutorial */
+.welcome-overlay{position:fixed;inset:0;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000}
+.welcome-modal{width:min(100%,520px);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;box-shadow:0 20px 70px #0004}
+.welcome-badge{display:inline-block;background:#eaf0ff;color:#1748b8;border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:800;margin-bottom:12px}
+.welcome-modal h2{font-size:clamp(1.45rem,5vw,2rem);margin:0 0 10px}
+.welcome-modal p{color:var(--muted);line-height:1.6;font-size:1rem}
+.tutorial-page{display:none;min-height:230px}
+.tutorial-page.active{display:block}
+.tutorial-icon{font-size:3.2rem;margin:8px 0 14px}
+.tutorial-progress{display:flex;gap:6px;margin:14px 0 20px}
+.tutorial-dot{height:6px;flex:1;border-radius:99px;background:var(--border)}
+.tutorial-dot.active{background:var(--primary)}
+.tutorial-page h3{font-size:1.35rem;line-height:1.25;margin:0 0 10px}
+.tutorial-page .big-text{font-size:1.08rem;line-height:1.65;color:var(--muted)}
+.welcome-footer{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:20px}
+.welcome-footer label{display:flex;gap:7px;align-items:center;margin:0;font-weight:500;color:var(--muted);font-size:.9rem}
+.welcome-footer button{flex:1;min-width:145px}
+.tutorial-nav{display:flex;gap:8px;margin-top:18px}
+.tutorial-nav button{flex:1}
+.help-button{margin-top:8px}
+@media(max-width:620px){.welcome-modal{padding:20px;border-radius:18px}.welcome-footer{align-items:stretch}.welcome-footer button{width:100%}}
+
 @media(max-width:620px){.container{padding:12px}.card{padding:14px;border-radius:15px}.grid,.grid-3,.summary{grid-template-columns:1fr}.item-top{flex-direction:column}.actions button{flex:1}.result{grid-template-columns:1fr auto}}
 @media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;break-inside:avoid}.container{max-width:none}}
 </style>
 </head>
 <body>
+
+<!-- Tela inicial de boas-vindas e tutorial em etapas -->
+<div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="welcome-modal">
+    <span class="welcome-badge" id="welcomeBadge">PASSO 1 DE 4</span>
+    <h2 id="welcomeTitle">🍽️ Bem-vindo ao Divisor de Contas</h2>
+
+    <div class="tutorial-progress" aria-hidden="true">
+      <span class="tutorial-dot active"></span><span class="tutorial-dot"></span>
+      <span class="tutorial-dot"></span><span class="tutorial-dot"></span>
+    </div>
+
+    <section class="tutorial-page active" data-page="0">
+      <div class="tutorial-icon">👥</div>
+      <h3>1. Cadastre as pessoas</h3>
+      <p class="big-text">Comece adicionando todas as pessoas que vão participar da conta. Você pode cadastrar quantas pessoas precisar e remover alguém caso seja necessário.</p>
+    </section>
+
+    <section class="tutorial-page" data-page="1">
+      <div class="tutorial-icon">🍕</div>
+      <h3>2. Adicione os itens</h3>
+      <p class="big-text">Registre cada item consumido, informe o valor e a quantidade. Depois, selecione quem consumiu aquele item para que a divisão fique correta.</p>
+    </section>
+
+    <section class="tutorial-page" data-page="2">
+      <div class="tutorial-icon">⚖️</div>
+      <h3>3. Escolha como dividir</h3>
+      <p class="big-text">Você pode dividir igualmente entre as pessoas selecionadas, atribuir um item a uma pessoa ou usar a divisão proporcional por pesos para consumos diferentes.</p>
+    </section>
+
+    <section class="tutorial-page" data-page="3">
+      <div class="tutorial-icon">🧾</div>
+      <h3>4. Confira o resultado</h3>
+      <p class="big-text">Ao final, confira o subtotal, a taxa de atendimento, outras cobranças e quanto cada pessoa deve pagar. Você também pode editar itens já lançados.</p>
+    </section>
+
+    <section class="tutorial-page" data-page="4">
+      <div class="tutorial-icon">🚀</div>
+      <h3>Pronto para começar?</h3>
+      <p class="big-text">Agora é só cadastrar o grupo e lançar os itens da mesa. O aplicativo fará os cálculos para você.</p>
+    </section>
+
+    <div class="tutorial-nav">
+      <button type="button" class="ghost" id="tutorialBack">← Voltar</button>
+      <button type="button" class="primary" id="tutorialNext">Próximo →</button>
+    </div>
+
+    <div class="welcome-footer" id="welcomeFooter">
+      <label><input type="checkbox" id="dontShowWelcome"> Não mostrar novamente</label>
+      <button type="button" class="primary" id="startApp">Começar a dividir</button>
+    </div>
+  </div>
+</div>
+
 <div class="container">
   <header class="header">
     <h1>🧾 Divisor de Contas</h1>
     <p>Separe itens individuais, duplas, grupos e taxas. O total de cada pessoa é calculado automaticamente.</p>
+    <button class="ghost small help-button no-print" id="openWelcome">❔ Como usar</button>
   </header>
 
   <section class="card no-print">
@@ -87,7 +164,10 @@ button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:
   <section class="card">
     <div class="item-top">
       <h2>5. Resultado final</h2>
-      <button class="secondary small no-print" id="copyResult">Copiar resumo</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="secondary small no-print" id="copyResult">Copiar resumo</button>
+        <button class="primary small no-print" id="shareWhatsapp">📲 WhatsApp</button>
+      </div>
     </div>
     <div class="summary">
       <div class="metric"><span>Subtotal</span><strong id="subtotal">R$ 0,00</strong></div>
@@ -129,7 +209,8 @@ function addPerson(){
   const name=$('personName').value.trim();
   if(!name)return alert('Digite um nome.');
   if(state.people.includes(name))return alert('Essa pessoa já está no grupo.');
-  state.people.push(name);$('personName').value='';renderPeople();
+  state.people.push(name);$('personName').value='';
+renderPeople();
 }
 function removePerson(i){
   const p=state.people[i];
@@ -207,9 +288,9 @@ function calculate(){
 }
 function summaryText(){
   const s=window.lastSummary;if(!s)return '';
-  let text='RESUMO DA CONTA\\n\\n';
-  state.people.forEach(p=>text+=`${p}: ${money(s.final[p])}\\n`);
-  text+=`\\nSubtotal: ${money(s.subtotal)}\\nTaxa: ${money(s.fee)}\\nOutras cobranças: ${money(s.extra)}\\nTOTAL: ${money(s.total)}`;
+  let text='🍽️ RESUMO DA CONTA\n\n';
+  state.people.forEach(p=>text+=`• ${p}: ${money(s.final[p])}\n`);
+  text+=`\nSubtotal: ${money(s.subtotal)}\nTaxa de atendimento: ${money(s.fee)}\nOutras cobranças: ${money(s.extra)}\nTOTAL GERAL: ${money(s.total)}\n\nDividido pelo Divisor de Contas.`;
   return text;
 }
 $('addPerson').onclick=addPerson;$('personName').addEventListener('keydown',e=>{if(e.key==='Enter')addPerson()});
@@ -224,7 +305,48 @@ $('examplePeople').onclick=()=>{state.people=['Isabel','João','Maria','Pedro','
 $('resetAll').onclick=()=>{if(confirm('Reiniciar tudo?')){state.people=[];state.items=[];$('feePercent').value=10;$('extraCharge').value=0;renderPeople()}};
 $('printResult').onclick=()=>window.print();
 $('copyResult').onclick=async()=>{try{await navigator.clipboard.writeText(summaryText());$('copyResult').textContent='✓ Copiado';setTimeout(()=>$('copyResult').textContent='Copiar resumo',1300)}catch(e){prompt('Copie o resumo:',summaryText())}};
+$('shareWhatsapp').onclick=()=>{
+  const text=summaryText();
+  if(!state.people.length){alert('Adicione pelo menos uma pessoa antes de compartilhar.');return;}
+  const url='https://wa.me/?text='+encodeURIComponent(text);
+  window.open(url,'_blank');
+};
 renderPeople();
+
+// Tutorial em 5 telas rápidas
+const welcomeOverlay = $('welcomeOverlay');
+const tutorialPages = [...document.querySelectorAll('.tutorial-page')];
+const tutorialDots = [...document.querySelectorAll('.tutorial-dot')];
+const tutorialBack = $('tutorialBack');
+const tutorialNext = $('tutorialNext');
+const startApp = $('startApp');
+const dontShowWelcome = $('dontShowWelcome');
+let tutorialPage = 0;
+
+function showTutorialPage(page){
+  tutorialPage = Math.max(0, Math.min(4, page));
+  tutorialPages.forEach((el, i) => el.classList.toggle('active', i === tutorialPage));
+  tutorialDots.forEach((el, i) => el.classList.toggle('active', i <= Math.min(tutorialPage, 3)));
+  $('welcomeBadge').textContent = tutorialPage < 4 ? `PASSO ${tutorialPage + 1} DE 4` : 'TUDO PRONTO';
+  tutorialBack.style.visibility = tutorialPage === 0 ? 'hidden' : 'visible';
+  tutorialNext.style.display = tutorialPage === 4 ? 'none' : 'block';
+  startApp.textContent = 'Começar a dividir ✓';
+  $('welcomeFooter').style.display = tutorialPage === 4 ? 'flex' : 'none';
+}
+function closeTutorial(){
+  if(dontShowWelcome.checked) localStorage.setItem('divisorWelcomeSeen', '1');
+  welcomeOverlay.style.display = 'none';
+}
+tutorialBack.onclick = () => showTutorialPage(tutorialPage - 1);
+tutorialNext.onclick = () => showTutorialPage(tutorialPage + 1);
+startApp.onclick = closeTutorial;
+$('openWelcome').onclick = () => {
+  welcomeOverlay.style.display = 'flex';
+  showTutorialPage(0);
+};
+if(localStorage.getItem('divisorWelcomeSeen') === '1') welcomeOverlay.style.display = 'none';
+showTutorialPage(0);
+
 </script>
 </body>
 </html>
