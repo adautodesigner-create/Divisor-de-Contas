@@ -1,6 +1,6 @@
 // Divisor de Contas — funcionamento sem internet.
 // Ao publicar uma versão nova do app, aumente o número abaixo para os celulares baixarem a atualização.
-const VERSION = 'divisor-v3';
+const VERSION = 'divisor-v4';
 const FONTS = 'divisor-fontes';
 const SHELL = [
   './',

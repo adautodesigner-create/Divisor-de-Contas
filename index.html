@@ -138,6 +138,10 @@ h1.view-title{font-size:clamp(2rem,9vw,2.6rem);line-height:1.02;letter-spacing:-
 .filter-row .chip .avatar{width:28px;height:28px;font-size:.78rem}
 .item-part{display:block;font-size:.78rem;font-weight:500;color:var(--muted);text-align:right}
 .filter-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 2px;border-top:1.5px dashed var(--line);margin-top:4px;font-weight:650}
+.round-head{display:flex;align-items:center;gap:14px;justify-content:space-between}
+.lbl{display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:6px}
+.was{display:block;text-align:right;font-family:var(--font);font-size:.78rem;color:var(--muted);font-weight:500;text-decoration:line-through}
+.round-badge{display:table;margin-top:4px;padding:1px 7px;border-radius:99px;background:var(--amber-soft);font-size:.72rem;font-weight:650;color:var(--ink)}
 .filter-total b{font-size:1.2rem;font-variant-numeric:tabular-nums}
 .empty{text-align:center;padding:30px 12px 22px;color:var(--muted)}
 .empty strong{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:4px}
@@ -334,6 +338,28 @@ details.extra summary{cursor:pointer;font-weight:700;color:var(--muted);font-siz
         <button class="btn btn-quiet" id="printBtn">Imprimir</button>
       </div>
     </div>
+    <div class="panel no-print" id="roundPanel">
+      <div class="round-head">
+        <div><h2 style="margin:0">Arredondar valores</h2><p class="hint" style="margin:2px 0 0">Valores redondos para facilitar o Pix. Uma pessoa fica com a diferença.</p></div>
+        <label class="switch"><input type="checkbox" id="roundOn" aria-label="Arredondar valores"><span></span></label>
+      </div>
+      <div id="roundOpts" hidden>
+        <div class="field" style="margin-top:16px"><span class="lbl">Arredondar para</span>
+          <div class="seg" role="group" aria-label="Arredondar para">
+            <button type="button" data-step="50">R$ 0,50</button><button type="button" data-step="100">R$ 1</button><button type="button" data-step="500">R$ 5</button><button type="button" data-step="1000">R$ 10</button>
+          </div>
+        </div>
+        <div class="field"><span class="lbl">Direção</span>
+          <div class="seg" role="group" aria-label="Direção do arredondamento">
+            <button type="button" data-dir="nearest">Mais próximo</button><button type="button" data-dir="up">Sempre para cima</button>
+          </div>
+        </div>
+        <label class="field"><span>Quem fica com a diferença</span><select class="input" id="roundAbs"></select></label>
+        <div class="field" style="margin-bottom:0"><span class="lbl">Quem tem o valor arredondado</span>
+          <div class="chips" id="roundWho"></div>
+        </div>
+      </div>
+    </div>
     <div class="receipts" id="receipts"></div>
   </section>
 </div>
@@ -461,12 +487,12 @@ const store = {
 };
 
 /* ---------- Estado ---------- */
-const blank = () => ({people:[], items:[], feePct:10, feeMode:'prop', couvert:0, extra:0, groupId:null, tab:'pessoas', sort:'order', filter:null});
+const blank = () => ({people:[], items:[], feePct:10, feeMode:'prop', couvert:0, extra:0, groupId:null, tab:'pessoas', sort:'order', filter:null, round:{on:false, step:100, dir:'nearest', absorber:null, skip:[]}});
 let S = load();
 
 function load(){
   const v2 = store.get(KEY, null);
-  if (v2 && Array.isArray(v2.people)) return Object.assign(blank(), v2);
+  if (v2 && Array.isArray(v2.people)){ const s = Object.assign(blank(), v2); s.round = Object.assign(blank().round, v2.round || {}); return s; }
   // migra a versão anterior do app
   const old = store.get(OLD_KEY, null), s = blank();
   if (old && Array.isArray(old.people)){
@@ -537,8 +563,30 @@ function compute(){
     const r = per[p.id]; r.couvert = S.couvert; r.extra = extraParts[i]; r.total = r.cons + r.fee + r.couvert + r.extra;
     r.adjust = 0;
   });
-  const sumPeople = present.reduce((a, p) => a + per[p.id].total, 0);
-  return {present, per, subtotal, fee, pct, couvertTotal, extra:S.extra, grand, orphan, orphans, sumPeople, closes: present.length > 0 && sumPeople + orphan === grand && orphan === 0};
+  // Arredondamento opcional: os escolhidos pagam valores redondos e uma pessoa fica com a diferença.
+  present.forEach(p => { per[p.id].final = per[p.id].total; per[p.id].roundDiff = 0; });
+  const R = S.round; let rounding = null;
+  if (R.on && present.length >= 2){
+    const byTotal = [...present].sort((a, b) => per[b.id].total - per[a.id].total);
+    const abs = present.find(p => p.id === R.absorber) || byTotal[0];
+    const step = R.step || 100;
+    const targets = present.filter(p => p !== abs && !R.skip.includes(p.id));
+    let diffSum = 0;
+    targets.forEach(p => {
+      const t = per[p.id].total, q = t / step;
+      const rt = (R.dir === 'up' ? Math.ceil(q) : Math.round(q)) * step;
+      per[p.id].roundDiff = rt - t; diffSum += rt - t;
+    });
+    const absFinal = per[abs.id].total - diffSum;
+    rounding = {absorber:abs, diff:-diffSum, targets, step, error: absFinal < 0};
+    if (rounding.error) targets.forEach(p => per[p.id].roundDiff = 0);
+    else {
+      targets.forEach(p => per[p.id].final = per[p.id].total + per[p.id].roundDiff);
+      per[abs.id].roundDiff = -diffSum; per[abs.id].final = absFinal;
+    }
+  }
+  const sumPeople = present.reduce((a, p) => a + per[p.id].final, 0);
+  return {present, per, subtotal, fee, pct, couvertTotal, extra:S.extra, grand, orphan, orphans, sumPeople, rounding, closes: present.length > 0 && sumPeople + orphan === grand && orphan === 0};
 }
 
 /* ---------- Utilidades de interface ---------- */
@@ -827,19 +875,26 @@ function renderSplit(c){
   if (!c.present.length) alert = '';
   else if (c.orphan) alert = `<div class="alert" role="alert">${money(c.orphan)} em itens sem ninguém marcado. A soma das pessoas ainda não fecha com o total.</div>`;
   else if (S.items.length) alert = `<div class="alert ok">A soma de todos fecha exatamente com o total da conta.</div>`;
+  if (c.rounding && !c.orphan){
+    const R = c.rounding, d = R.diff;
+    alert = R.error
+      ? `<div class="alert" role="alert">A diferença do arredondamento (${money(-d)}) é maior que o valor de ${esc(R.absorber.name)}. Escolha outra pessoa ou um arredondamento menor.</div>`
+      : `<div class="alert ok">Valores arredondados. ${esc(R.absorber.name)} fica com a diferença de ${d >= 0 ? '+' : '−'}${money(Math.abs(d))} e a soma continua igual ao total da conta.</div>`;
+  }
   $('splitAlert').innerHTML = alert;
+  renderRound(c);
   document.querySelectorAll('[data-feemode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.feemode === S.feeMode));
 
   if (!c.present.length){
     $('receipts').innerHTML = `<div class="panel empty"><strong>Sem pessoas presentes</strong><p>Adicione quem está na mesa para ver quanto cada um paga.</p><button class="btn btn-quiet" data-go="pessoas">Ir para Pessoas</button></div>`;
     return;
   }
-  const sorted = [...c.present].sort((a, b) => c.per[b.id].total - c.per[a.id].total);
+  const sorted = [...c.present].sort((a, b) => c.per[b.id].final - c.per[a.id].final);
   $('receipts').innerHTML = sorted.map(p => {
     const r = c.per[p.id];
     const lines = r.lines.map(l => `<div class="rline"><span>${esc(l.name)}${l.whole ? '' : ` (${l.frac})`}</span><span>${money(l.cents)}</span></div>`).join('') || '<div class="rline muted"><span>Nenhum item marcado</span><span></span></div>';
     return `<article class="receipt">
-      <div class="receipt-head">${avatar(p)}<div class="who">${esc(p.name)}<small>${r.lines.length} ${r.lines.length === 1 ? 'item' : 'itens'}${p.noFee ? ', sem serviço' : ''}</small></div><div class="receipt-total">${money(r.total)}</div></div>
+      <div class="receipt-head">${avatar(p)}<div class="who">${esc(p.name)}<small>${r.lines.length} ${r.lines.length === 1 ? 'item' : 'itens'}${p.noFee ? ', sem serviço' : ''}${c.rounding && !c.rounding.error && c.rounding.absorber.id === p.id ? '<span class="round-badge">fica com a diferença</span>' : ''}</small></div><div class="receipt-total">${money(r.final)}${r.roundDiff ? `<span class="was">${money(r.total)}</span>` : ''}</div></div>
       <details><summary><span class="open-label">Ver detalhes</span><span class="close-label">Ocultar detalhes</span></summary>
         <hr class="rrule">${lines}<hr class="rrule">
         <div class="rline muted"><span>Consumo</span><span>${money(r.cons)}</span></div>
@@ -847,20 +902,45 @@ function renderSplit(c){
         ${r.couvert ? `<div class="rline muted"><span>Couvert</span><span>${money(r.couvert)}</span></div>` : ''}
         ${r.extra ? `<div class="rline muted"><span>Outras cobranças</span><span>${money(r.extra)}</span></div>` : ''}
         ${r.adjust ? `<div class="rline muted"><span>Ajuste de centavos</span><span>${r.adjust > 0 ? '+' : '−'}${money(Math.abs(r.adjust))}</span></div>` : ''}
-        <hr class="rrule"><div class="rline" style="font-weight:600"><span>Total</span><span>${money(r.total)}</span></div>
+        ${r.roundDiff ? `<div class="rline muted"><span>${c.rounding && c.rounding.absorber.id === p.id ? 'Diferença do arredondamento' : 'Arredondamento'}</span><span>${r.roundDiff > 0 ? '+' : '−'}${money(Math.abs(r.roundDiff))}</span></div>` : ''}
+        <hr class="rrule"><div class="rline" style="font-weight:600"><span>Total</span><span>${money(r.final)}</span></div>
       </details></article>`;
   }).join('');
 }
 $('receipts').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) setTab(b.dataset.go); });
 
+function renderRound(c){
+  const R = S.round, show = c.present.length >= 2;
+  $('roundPanel').hidden = !show;
+  if (!show) return;
+  $('roundOn').checked = R.on; $('roundOpts').hidden = !R.on;
+  if (!R.on) return;
+  document.querySelectorAll('[data-step]').forEach(b => b.setAttribute('aria-pressed', Number(b.dataset.step) === R.step));
+  document.querySelectorAll('[data-dir]').forEach(b => b.setAttribute('aria-pressed', b.dataset.dir === R.dir));
+  const abs = c.rounding ? c.rounding.absorber.id : null;
+  $('roundAbs').innerHTML = c.present.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  $('roundAbs').value = abs;
+  $('roundWho').innerHTML = c.present.filter(p => p.id !== abs).map(p => `<button type="button" class="chip" data-rid="${p.id}" aria-pressed="${!R.skip.includes(p.id)}">${avatar(p)}${esc(p.name)}</button>`).join('');
+}
+$('roundOn').addEventListener('change', () => { S.round.on = $('roundOn').checked; render(); });
+document.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { S.round.step = Number(b.dataset.step); render(); });
+document.querySelectorAll('[data-dir]').forEach(b => b.onclick = () => { S.round.dir = b.dataset.dir; render(); });
+$('roundAbs').addEventListener('change', () => { S.round.absorber = $('roundAbs').value; S.round.skip = S.round.skip.filter(id => id !== S.round.absorber); render(); });
+$('roundWho').addEventListener('click', e => {
+  const b = e.target.closest('[data-rid]'); if (!b) return;
+  const id = b.dataset.rid, k = S.round.skip;
+  S.round.skip = k.includes(id) ? k.filter(x => x !== id) : [...k, id]; render();
+});
+
 function summary(){
   const c = compute(); if (!c.present.length) return '';
   let t = '*Divisão da conta*\n\n';
-  [...c.present].sort((a, b) => c.per[b.id].total - c.per[a.id].total).forEach(p => {
-    const r = c.per[p.id]; t += `*${p.name}: ${money(r.total)}*\n`;
+  [...c.present].sort((a, b) => c.per[b.id].final - c.per[a.id].final).forEach(p => {
+    const r = c.per[p.id]; t += `*${p.name}: ${money(r.final)}*\n`;
     r.lines.forEach(l => t += `  ${l.name}${l.whole ? '' : ` (${l.frac})`}: ${money(l.cents)}\n`);
     const extras = []; if (r.fee) extras.push(`serviço ${money(r.fee)}`); if (r.couvert) extras.push(`couvert ${money(r.couvert)}`); if (r.extra) extras.push(`outras ${money(r.extra)}`);
     if (extras.length) t += `  + ${extras.join(', ')}\n`;
+    if (r.roundDiff) t += `  ${c.rounding && c.rounding.absorber.id === p.id ? 'diferença do arredondamento' : 'arredondamento'} ${r.roundDiff > 0 ? '+' : '−'}${money(Math.abs(r.roundDiff))}\n`;
     t += '\n';
   });
   t += `Itens: ${money(c.subtotal)}\n`;
