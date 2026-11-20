@@ -2,542 +2,961 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EEF1EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101413" media="(prefers-color-scheme: dark)">
 <title>Divisor de Contas</title>
+<meta name="description" content="Divida a conta do bar ou restaurante por item, com taxa de serviço e couvert.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Divisor">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--text:#182230;--muted:#687386;--primary:#2463eb;--danger:#dc3545;--border:#dfe5ef;--success:#16834b;--soft:#f7f9fc;--soft2:#f0f3f7;--input:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
-.container{max-width:1050px;margin:auto;padding:20px;font-size:17px}.header{margin-bottom:18px}.header h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.2rem)}.header p{margin:0;color:var(--muted)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 18px #1822300b}
-h2{font-size:1.05rem;margin:0 0 14px}h3{font-size:.95rem;margin:14px 0 8px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:#344054}input,select,button{font:inherit}input,select{width:100%;padding:13px;font-size:1rem;border:1px solid var(--border);border-radius:10px;background:var(--input);color:var(--text)}
-button{border:0;border-radius:10px;padding:13px 15px;cursor:pointer;font-weight:700}.primary{background:var(--primary);color:#fff}.secondary{background:#eaf0ff;color:#1748b8}.ghost{background:var(--soft2);color:var(--text)}.danger{background:#fff0f0;color:var(--danger)}.small{padding:9px 11px;font-size:.88rem}.qty-control{display:flex;align-items:center;gap:6px}.qty-control button{width:42px;height:42px;padding:0;font-size:1.35rem}.qty-control input{max-width:90px;text-align:center}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.person-row,.item-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:8px}
-.persons{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.person-chip{display:flex;align-items:center;gap:7px;padding:9px;background:var(--soft);border:1px solid var(--border);border-radius:10px;font-size:.9rem}
-.item{border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:10px}.item-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.item-title{font-weight:800}.muted{color:var(--muted);font-size:.85rem}.checks{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.checks label{margin:0;display:flex;gap:5px;align-items:center;padding:7px 9px;background:var(--soft);border-radius:8px;font-weight:600}
-.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.metric{background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:12px}.metric span{display:block;color:var(--muted);font-size:.78rem}.metric strong{font-size:1.15rem}
-.result{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.result:last-child{border-bottom:0}.amount{font-weight:900;font-variant-numeric:tabular-nums}.notice{padding:10px 12px;border-radius:10px;background:#eefaf3;color:var(--success);font-size:.88rem;margin-top:12px}
-.empty{color:var(--muted);padding:12px 0;font-size:.9rem}
-/* Tela de boas-vindas e tutorial */
-.welcome-overlay{position:fixed;inset:0;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000}
-.welcome-modal{width:min(100%,520px);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;box-shadow:0 20px 70px #0004}
-.welcome-badge{display:inline-block;background:#eaf0ff;color:#1748b8;border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:800;margin-bottom:12px}
-.welcome-modal h2{font-size:clamp(1.45rem,5vw,2rem);margin:0 0 10px}
-.welcome-modal p{color:var(--muted);line-height:1.6;font-size:1rem}
-.tutorial-page{display:none;min-height:230px}
-.tutorial-page.active{display:block}
-.tutorial-icon{font-size:3.2rem;margin:8px 0 14px}
-.tutorial-progress{display:flex;gap:6px;margin:14px 0 20px}
-.tutorial-dot{height:6px;flex:1;border-radius:99px;background:var(--border)}
-.tutorial-dot.active{background:var(--primary)}
-.tutorial-page h3{font-size:1.35rem;line-height:1.25;margin:0 0 10px}
-.tutorial-page .big-text{font-size:1.08rem;line-height:1.65;color:var(--muted)}
-.welcome-footer{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:20px}
-.welcome-footer label{display:flex;gap:7px;align-items:center;margin:0;font-weight:500;color:var(--muted);font-size:.9rem}
-.welcome-footer button{flex:1;min-width:145px}
-.tutorial-nav{display:flex;gap:8px;margin-top:18px}
-.tutorial-nav button{flex:1}
-.help-button{margin-top:8px}.theme-button{font-size:1rem;min-width:40px}.profile-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.profile-list{display:grid;gap:8px;margin-top:12px}.profile-row{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--soft)}.profile-row .profile-name{font-weight:800}.presence-list{display:grid;gap:7px;margin-top:10px}.presence-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--soft)}.help-button{margin-top:8px}.save-status{font-size:.82rem;color:var(--muted)}
-.profile-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:90}
-.profile-panel{display:none;position:fixed;z-index:100;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px,calc(100% - 28px));max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.28);margin:0}
-.profile-panel.open{display:block}
-.profile-backdrop.open{display:block}
-body.modal-open{overflow:hidden}
-@media(max-width:620px){
-  .profile-panel{width:calc(100% - 20px);max-height:calc(100vh - 24px)}
+:root{
+  --bg:#EEF1EF; --surface:#FFFFFF; --paper:#FBFBF7; --ink:#16201C; --muted:#5D6B65; --line:#D9E0DC;
+  --accent:#0B6E4F; --accent-ink:#FFFFFF; --accent-soft:#DCEDE5; --amber:#E9B44C; --amber-soft:#FBF0D6; --danger:#B42318; --danger-soft:#FCE8E6;
+  --radius-l:22px; --radius-m:14px; --radius-s:10px;
+  --shadow:0 1px 0 rgba(22,32,28,.04),0 8px 24px -12px rgba(22,32,28,.18);
+  --font:'Bricolage Grotesque',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  --dock-h:142px;
+  color-scheme:light;
 }
+:root[data-theme="dark"]{
+  --bg:#101413; --surface:#181E1C; --paper:#1D2422; --ink:#E8EEEB; --muted:#9AA8A2; --line:#2C3633;
+  --accent:#4FC59A; --accent-ink:#06261A; --accent-soft:#173A2E; --amber:#F0C46A; --amber-soft:#3A3020; --danger:#FF9C93; --danger-soft:#3D1F1C;
+  --shadow:0 1px 0 rgba(0,0,0,.2),0 10px 28px -14px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.45;font-optical-sizing:auto;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums lining-nums}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-@media(max-width:620px){#saveStatus{width:100%}}
-@media(max-width:620px){.welcome-modal{padding:20px;border-radius:18px}.welcome-footer{align-items:stretch}.welcome-footer button{width:100%}}
+/* App shell */
+.app{max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 18px calc(var(--dock-h) + 28px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:1.05rem;letter-spacing:-.01em}
+.brand-mark{width:30px;height:36px;border-radius:6px 6px 2px 2px;background:var(--ink);position:relative;flex:none;
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 5px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/6px 5px repeat-x;
+          mask:linear-gradient(#000 0 0) top/100% calc(100% - 5px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/6px 5px repeat-x}
+.brand-mark::before,.brand-mark::after{content:"";position:absolute;left:7px;right:7px;height:2px;background:var(--bg);border-radius:2px}
+.brand-mark::before{top:9px}.brand-mark::after{top:15px;right:12px}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.icon-btn svg{width:20px;height:20px}
+.top-actions{display:flex;gap:8px}
 
-body[data-theme="dark"]{--bg:#111318;--card:#1b1e25;--text:#f1f3f7;--muted:#aab2c0;--border:#353b48;--soft:#242934;--soft2:#2d3340;--input:#20242d;--danger:#ff9da6}
-body[data-theme="dark"] .secondary{background:#263b70;color:#dce7ff}
-body[data-theme="dark"] .notice{background:#173b2b;color:#9af0bf}
-@media(max-width:620px){.container{padding:12px}.card{padding:14px;border-radius:15px}.grid,.grid-3,.summary{grid-template-columns:1fr}.item-top{flex-direction:column}.actions button{flex:1}.result{grid-template-columns:1fr auto}}
-@media print{body{background:#fff}.no-print{display:none!important}.card{box-shadow:none;break-inside:avoid}.container{max-width:none}}
+h1.view-title{font-size:clamp(2rem,9vw,2.6rem);line-height:1.02;letter-spacing:-.035em;font-weight:780;margin:0 0 6px}
+.view-lead{color:var(--muted);margin:0 0 22px;max-width:36ch}
+.view{display:none}
+.view.active{display:block;animation:viewIn .22s ease-out}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.panel{background:var(--surface);border-radius:var(--radius-l);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.panel h2{font-size:1rem;font-weight:700;margin:0 0 12px;letter-spacing:-.01em}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
+.panel-head h2{margin:0}
+.hint{color:var(--muted);font-size:.88rem;margin:8px 0 0}
+
+/* Inputs */
+.field{display:block;margin-bottom:14px}
+.field>span{display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:6px}
+.input{width:100%;height:52px;padding:0 14px;border-radius:var(--radius-m);border:1.5px solid var(--line);background:var(--bg);font-size:1.05rem;transition:border-color .15s}
+.input:focus{border-color:var(--accent);outline:none;background:var(--surface)}
+.input.money{font-variant-numeric:tabular-nums;font-weight:650;font-size:1.25rem}
+.row{display:flex;gap:10px;align-items:stretch}
+.row>.grow{flex:1;min-width:0}
+
+.btn{height:52px;padding:0 20px;border-radius:var(--radius-m);border:0;font-weight:700;font-size:1rem;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;transition:transform .08s,filter .15s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-quiet{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
+.btn-danger{background:var(--danger-soft);color:var(--danger)}
+.btn-block{width:100%}
+.btn-sm{height:40px;padding:0 14px;font-size:.92rem;border-radius:12px}
+.link-btn{background:none;border:0;padding:6px 0;color:var(--accent);font-weight:700;font-size:.92rem}
+
+.seg{display:flex;background:var(--bg);border:1.5px solid var(--line);border-radius:var(--radius-m);padding:4px;gap:4px}
+.seg button{flex:1;height:42px;border:0;border-radius:10px;background:none;font-weight:650;color:var(--muted);font-size:.95rem}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+.stepper{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:var(--bg)}
+.stepper button{width:42px;height:42px;border:0;background:none;font-size:1.3rem;font-weight:600}
+.stepper output{min-width:30px;text-align:center;font-weight:700}
+
+/* People */
+.avatar{--h:160;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:750;font-size:.95rem;flex:none;
+  background:hsl(var(--h) 45% 88%);color:hsl(var(--h) 55% 24%)}
+:root[data-theme="dark"] .avatar{background:hsl(var(--h) 30% 26%);color:hsl(var(--h) 60% 86%)}
+.avatar.sm{width:26px;height:26px;font-size:.75rem;border:2px solid var(--surface)}
+.avatar-stack{display:flex}
+.avatar-stack .avatar+.avatar{margin-left:-8px}
+
+.person{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.person:first-child{border-top:0}
+.person-name{flex:1;min-width:0;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.person-name small{display:block;font-weight:500;color:var(--muted);font-size:.8rem}
+.person.absent .person-name,.person.absent .avatar{opacity:.45}
+.switch{position:relative;width:52px;height:32px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .15s;pointer-events:none}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s}
+.switch input:checked+span{background:var(--accent)}
+.switch input:checked+span::after{transform:translateX(20px)}
+.switch input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.more{width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--muted);display:grid;place-items:center}
+.more svg{width:20px;height:20px}
+
+/* Items */
+.item{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
+.item:first-child{border-top:0}
+.item-main{flex:1;min-width:0}
+.item-name{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-meta{color:var(--muted);font-size:.85rem;margin-top:2px}
+.item-price{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.item.orphan .item-meta{color:var(--danger);font-weight:600}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;background:var(--amber-soft);color:var(--ink);font-size:.75rem;font-weight:650}
+
+.list-tools{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.sort-row{display:flex;align-items:center;gap:10px}
+.sort-row label{font-size:.85rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.sort-row select{height:44px;font-size:.95rem;padding:0 12px}
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;margin:0 -2px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-row .chip{height:40px;flex:none;font-size:.9rem}
+.filter-row .chip .avatar{width:28px;height:28px;font-size:.78rem}
+.item-part{display:block;font-size:.78rem;font-weight:500;color:var(--muted);text-align:right}
+.filter-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 2px;border-top:1.5px dashed var(--line);margin-top:4px;font-weight:650}
+.filter-total b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.empty{text-align:center;padding:30px 12px 22px;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:4px}
+.empty p{margin:0 auto 16px;max-width:30ch}
+
+.alert{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius-m);background:var(--danger-soft);color:var(--danger);font-weight:600;font-size:.92rem;margin-bottom:14px}
+.alert.ok{background:var(--accent-soft);color:var(--accent)}
+
+/* Receipts: the memorable bit */
+.receipts{display:grid;gap:18px;margin-top:6px}
+.receipt{background:var(--paper);font-family:var(--mono);font-size:.86rem;color:var(--ink);padding:18px 18px 26px;position:relative;
+  filter:drop-shadow(0 6px 10px rgba(22,32,28,.10));
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 9px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/14px 9px repeat-x;
+          mask:linear-gradient(#000 0 0) top/100% calc(100% - 9px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/14px 9px repeat-x;
+  border-radius:4px 4px 0 0}
+.receipt-head{display:flex;align-items:center;gap:10px;font-family:var(--font);margin-bottom:12px}
+.receipt-head .who{flex:1;font-weight:750;font-size:1.1rem;letter-spacing:-.01em}
+.receipt-head .who small{display:block;font-weight:500;font-size:.78rem;color:var(--muted)}
+.receipt-total{font-family:var(--font);font-weight:800;font-size:1.6rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.rline{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
+.rline span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rline span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.rline.muted{color:var(--muted)}
+.rrule{border:0;border-top:1.5px dashed var(--line);margin:10px 0}
+.receipt details summary{list-style:none;cursor:pointer;color:var(--accent);font-family:var(--font);font-weight:700;font-size:.88rem;padding:4px 0}
+.receipt details summary::-webkit-details-marker{display:none}
+.receipt details[open] summary .open-label{display:none}
+.receipt details:not([open]) summary .close-label{display:none}
+
+.grand{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:4px 2px 16px}
+.grand .label{color:var(--muted);font-size:.9rem}
+.grand .value{font-size:clamp(2.3rem,11vw,3rem);font-weight:800;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.breakdown{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:.92rem;color:var(--muted);padding:0 2px 6px}
+.breakdown b{color:var(--ink);font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
+.share-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.share-row .btn-primary{grid-column:1/-1}
+
+/* Dock */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 12px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+.dock-inner{max-width:560px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:26px;padding:12px 10px 8px;pointer-events:auto;box-shadow:0 14px 40px -12px rgba(0,0,0,.45)}
+:root[data-theme="dark"] .dock-inner{background:#E8EEEB;color:#101413}
+.dock-total{display:flex;align-items:center;justify-content:space-between;padding:0 10px 10px;gap:10px}
+.dock-total .t-label{font-size:.78rem;opacity:.7}
+.dock-total .t-value{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05}
+.fab{height:46px;padding:0 18px;border-radius:99px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:750;display:inline-flex;align-items:center;gap:6px}
+:root[data-theme="dark"] .fab{background:#0B6E4F;color:#fff}
+.fab svg{width:18px;height:18px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tab{height:44px;border:0;border-radius:16px;background:none;color:inherit;opacity:.62;font-weight:650;font-size:.92rem;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab[aria-selected="true"]{opacity:1;background:rgba(255,255,255,.12)}
+:root[data-theme="dark"] .tab[aria-selected="true"]{background:rgba(0,0,0,.08)}
+.tab .count{font-size:.75rem;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:rgba(255,255,255,.16);display:inline-grid;place-items:center}
+:root[data-theme="dark"] .tab .count{background:rgba(0,0,0,.1)}
+
+/* Sheets */
+dialog.sheet{border:0;padding:0;margin:auto auto 0;width:100%;max-width:560px;max-height:92dvh;background:var(--surface);color:var(--ink);border-radius:26px 26px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+dialog.sheet[open]{animation:sheetUp .24s cubic-bezier(.2,.8,.2,1)}
+dialog.sheet::backdrop{background:rgba(10,16,14,.5)}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@media(min-width:640px){dialog.sheet{margin:auto;border-radius:26px}}
+.sheet-body{padding:10px 20px calc(20px + env(safe-area-inset-bottom));overflow:auto;max-height:92dvh}
+.grabber{width:40px;height:5px;border-radius:9px;background:var(--line);margin:4px auto 14px}
+.sheet h3{font-size:1.4rem;letter-spacing:-.02em;margin:0 0 16px;font-weight:760}
+.sheet-actions{display:flex;gap:10px;margin-top:18px}
+.sheet-actions .btn{flex:1}
+.err{color:var(--danger);font-weight:600;font-size:.9rem;min-height:1.3em;margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 5px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);font-weight:650;font-size:.95rem}
+.chip .avatar{width:32px;height:32px;font-size:.85rem}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.chip.all{padding:0 16px}
+.weights{display:grid;gap:8px;margin-top:12px}
+.weight-row{display:flex;align-items:center;gap:10px}
+.weight-row .nm{flex:1;font-weight:650;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.weight-row .val{width:86px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+details.extra{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+details.extra summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.92rem}
+.inline{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:10px;font-weight:600;min-height:44px}
+.check input{width:22px;height:22px;accent-color:var(--accent)}
+
+.menu-list{display:grid;gap:4px}
+.menu-list button{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;border:0;background:none;text-align:left;font-weight:650;border-radius:12px;padding:0 10px}
+.menu-list button:hover{background:var(--bg)}
+.menu-list button.danger{color:var(--danger)}
+.menu-list #mInstall{color:var(--accent)}
+.install-steps{margin:0 0 12px;padding-left:22px;display:grid;gap:10px;font-size:1.02rem}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(var(--dock-h) + 24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:40;
+  background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:14px;font-weight:600;font-size:.95rem;max-width:calc(100% - 32px);transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{border:0;background:none;color:var(--amber);font-weight:800;padding:6px 4px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media print{
+  body{background:#fff}
+  .dock,.top,.no-print,.view:not([data-view="divisao"]){display:none!important}
+  .view[data-view="divisao"]{display:block!important}
+  .app{padding:0;max-width:none}
+  .receipt{filter:none;border:1px solid #ccc;break-inside:avoid;-webkit-mask:none;mask:none}
+  .receipt details>*{display:block}
+  .panel{box-shadow:none;border:1px solid #ddd}
+}
 </style>
 </head>
 <body>
-
-<!-- Tela inicial de boas-vindas e tutorial em etapas -->
-<div id="welcomeOverlay" class="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-  <div class="welcome-modal">
-    <span class="welcome-badge" id="welcomeBadge">PASSO 1 DE 4</span>
-    <h2 id="welcomeTitle">🍽️ Bem-vindo ao Divisor de Contas</h2>
-
-    <div class="tutorial-progress" aria-hidden="true">
-      <span class="tutorial-dot active"></span><span class="tutorial-dot"></span>
-      <span class="tutorial-dot"></span><span class="tutorial-dot"></span>
-    </div>
-
-    <section class="tutorial-page active" data-page="0">
-      <div class="tutorial-icon">👥</div>
-      <h3>1. Cadastre as pessoas</h3>
-      <p class="big-text">Comece adicionando todas as pessoas que vão participar da conta. Você pode cadastrar quantas pessoas precisar e remover alguém caso seja necessário.</p>
-    </section>
-
-    <section class="tutorial-page" data-page="1">
-      <div class="tutorial-icon">🍕</div>
-      <h3>2. Adicione os itens</h3>
-      <p class="big-text">Registre cada item consumido, informe o valor e a quantidade. Depois, selecione quem consumiu aquele item para que a divisão fique correta.</p>
-    </section>
-
-    <section class="tutorial-page" data-page="2">
-      <div class="tutorial-icon">⚖️</div>
-      <h3>3. Escolha como dividir</h3>
-      <p class="big-text">Você pode dividir igualmente entre as pessoas selecionadas, atribuir um item a uma pessoa ou usar a divisão proporcional por pesos para consumos diferentes.</p>
-    </section>
-
-    <section class="tutorial-page" data-page="3">
-      <div class="tutorial-icon">🧾</div>
-      <h3>4. Confira o resultado</h3>
-      <p class="big-text">Ao final, confira o subtotal, a taxa de atendimento, outras cobranças e quanto cada pessoa deve pagar. Você também pode editar itens já lançados.</p>
-    </section>
-
-    <section class="tutorial-page" data-page="4">
-      <div class="tutorial-icon">🚀</div>
-      <h3>Pronto para começar?</h3>
-      <p class="big-text">Agora é só cadastrar o grupo e lançar os itens da mesa. O aplicativo fará os cálculos para você.</p>
-    </section>
-
-    <div class="tutorial-nav">
-      <button type="button" class="ghost" id="tutorialBack">← Voltar</button>
-      <button type="button" class="primary" id="tutorialNext">Próximo →</button>
-    </div>
-
-    <div class="welcome-footer" id="welcomeFooter">
-      <label><input type="checkbox" id="dontShowWelcome"> Não mostrar novamente</label>
-      <button type="button" class="primary" id="startApp">Começar a dividir</button>
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <header class="header">
-    <h1>🧾 Divisor de Contas</h1>
-    <p>Separe itens individuais, duplas, grupos e taxas. O total de cada pessoa é calculado automaticamente.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
-      <button class="ghost small help-button no-print" id="openWelcome">❔ Como usar</button>
-      <button class="ghost small theme-button no-print" id="themeToggle" aria-label="Alternar tema">☀️</button>
-      <span class="muted no-print" id="saveStatus" style="font-size:.82rem">💾 Salvo neste dispositivo</span>
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Divisor de Contas</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Alternar tema claro ou escuro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="icon-btn" id="menuBtn" aria-label="Mais opções">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
     </div>
   </header>
 
-  <section class="card no-print">
-    <div class="item-top">
-      <h2>1. Pessoas do grupo</h2>
-      <button class="secondary small no-print" id="openProfiles">👥 Pessoas e perfis</button>
+  <!-- PESSOAS -->
+  <section class="view" data-view="pessoas" aria-labelledby="t-pessoas">
+    <h1 class="view-title" id="t-pessoas">Quem está na mesa?</h1>
+    <p class="view-lead">Adicione as pessoas de hoje ou carregue um grupo salvo.</p>
+    <div class="panel">
+      <form class="row" id="addPersonForm" autocomplete="off">
+        <label class="grow"><span class="sr">Nome da pessoa</span><input class="input" id="personName" placeholder="Nome" maxlength="40" enterkeyhint="done"></label>
+        <button class="btn btn-primary" type="submit">Adicionar</button>
+      </form>
+      <div class="err" id="personErr" role="alert"></div>
+      <div id="peopleList"></div>
     </div>
-    <div class="grid">
-      <div><label for="personName">Nome da pessoa</label><input id="personName" placeholder="Ex.: Isabel" maxlength="40"></div>
-      <div style="display:flex;align-items:end"><button class="primary" id="addPerson">+ Adicionar pessoa</button></div>
-    </div>
-    <div id="peopleList" class="persons" style="margin-top:12px"></div>
-    <div class="actions">
-      <button class="ghost small" id="examplePeople">Carregar exemplo</button>
-      <button class="danger small" id="clearPeople">Limpar pessoas</button>
-    </div>
-  </section>
-
-  <div id="profileBackdrop" class="profile-backdrop no-print"></div>
-  <section class="card no-print profile-panel" id="profilePanel" aria-hidden="true">
-    <div class="item-top">
-      <h2>👥 Pessoas e perfis</h2>
-      <button class="ghost small" id="closeProfiles" aria-label="Fechar pessoas e perfis">✕ Fechar</button>
-      <span class="muted" id="activeProfileLabel">Nenhum perfil selecionado</span>
-    </div>
-    <p class="muted">Salve grupos frequentes, como “Grupo dos Invasores”. Depois, carregue o perfil e marque apenas quem está presente nesta saída.</p>
-    <div class="grid">
-      <div><label for="profileSelect">Carregar perfil salvo</label><select id="profileSelect"><option value="">Selecione um perfil</option></select></div>
-      <div style="display:flex;align-items:end"><button class="secondary" id="loadProfile">Carregar perfil</button></div>
-    </div>
-    <div id="presenceList" class="presence-list"></div>
-    <div class="profile-actions">
-      <button class="primary small" id="saveProfile">💾 Salvar perfil atual</button>
-      <button class="ghost small" id="saveProfileChanges" style="display:none">✓ Atualizar perfil</button>
-      <button class="danger small" id="deleteProfile">Excluir perfil</button>
-    </div>
-    <div class="muted" style="margin-top:8px">Você pode editar a lista atual sem alterar o perfil salvo. Só clique em “Atualizar perfil” quando quiser guardar as mudanças.</div>
-    <div id="profileList" class="profile-list"></div>
-  </section>
-
-  <section class="card no-print">
-    <h2>2. Adicionar itens consumidos</h2><p class="muted">Preencha o item, ajuste a quantidade e selecione quem consumiu. Para pizzas diferentes, cadastre cada uma separadamente.</p>
-    <div class="grid">
-      <div><label for="itemName">Descrição do item</label><input id="itemName" placeholder="Ex.: Pizza grande"></div>
-      <div><label for="itemPrice">Preço (R$)</label><input id="itemPrice" type="number" min="0" step="0.01" placeholder="60,00"></div>
-    </div>
-    <div class="grid" style="margin-top:12px"><div><label for="itemQty">Quantidade</label><div class="qty-control"><button type="button" class="ghost" id="qtyMinus">−</button><input id="itemQty" type="number" min="1" step="1" value="1"><button type="button" class="ghost" id="qtyPlus">+</button></div></div><div><label for="unitMode">Como informar o preço?</label><select id="unitMode"><option value="total">Preço total das unidades</option><option value="unit">Preço de 1 unidade</option></select></div></div>
-    <div style="margin-top:12px"><label for="splitType">Como dividir este item?</label>
-      <select id="splitType">
-        <option value="selected">Igual entre as pessoas selecionadas</option>
-        <option value="individual">Individual — apenas 1 pessoa</option>
-        <option value="custom">Proporcional — consumos diferentes</option>
-      </select>
-    </div>
-    <div style="margin-top:12px">
-      <label>Participantes</label>
-      <div id="participantList" class="checks"></div>
-      <div class="muted" style="margin-top:6px">Selecione quem consumiu este item.</div>
-    </div>
-    <div id="customHelp" class="muted" style="margin-top:8px;display:none">Use esta opção quando as pessoas consumiram quantidades diferentes. Ex.: peso 2 = duas partes; peso 1 = uma parte. Um item de R$ 30 com pesos 2 e 1 será dividido em R$ 20 e R$ 10.</div>
-    <div id="customWeights" style="margin-top:8px"></div>
-    <div class="actions"><button class="primary" id="addItem">+ Adicionar item</button></div>
-  </section>
-
-  <section class="card">
-    <div class="item-top">
-      <h2>3. Itens lançados</h2>
-      <button class="ghost small no-print" id="clearItems">Limpar itens</button>
-    </div>
-    <div id="itemsList"></div>
-  </section>
-
-  <section class="card no-print">
-    <h2>4. Taxa de atendimento</h2>
-    <div class="grid-3">
-      <div><label for="feePercent">Percentual (%)</label><input id="feePercent" type="number" min="0" step="0.1" value="10"></div>
-      <div><label for="feeMode">Como dividir a taxa?</label><select id="feeMode"><option value="proportional">Proporcional ao consumo</option><option value="equal">Igual para todos</option></select></div>
-      <div><label for="extraCharge">Outras cobranças (R$)</label><input id="extraCharge" type="number" min="0" step="0.01" value="0"></div>
+    <div class="panel">
+      <div class="panel-head"><h2>Grupos salvos</h2><span class="hint" id="groupActive" style="margin:0"></span></div>
+      <div class="row">
+        <label class="grow"><span class="sr">Grupo salvo</span><select class="input" id="groupSelect"></select></label>
+        <button class="btn btn-quiet" id="loadGroup">Carregar</button>
+      </div>
+      <div class="inline">
+        <button class="btn btn-quiet btn-sm" id="saveGroupNew">Salvar como grupo</button>
+        <button class="btn btn-quiet btn-sm" id="updateGroup" hidden>Atualizar grupo</button>
+        <button class="btn btn-danger btn-sm" id="deleteGroup" hidden>Excluir grupo</button>
+      </div>
+      <p class="hint">Quem não veio hoje fica desligado e continua no grupo.</p>
     </div>
   </section>
 
-  <section class="card">
-    <div class="item-top">
-      <h2>5. Resultado final</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="secondary small no-print" id="copyResult">Copiar resumo</button>
-        <button class="primary small no-print" id="shareWhatsapp">📲 WhatsApp</button>
+  <!-- ITENS -->
+  <section class="view" data-view="itens" aria-labelledby="t-itens">
+    <h1 class="view-title" id="t-itens">O que foi pedido?</h1>
+    <p class="view-lead">Lance cada item e marque quem consumiu.</p>
+    <div id="orphanAlert"></div>
+    <div class="list-tools" id="itemTools" hidden>
+      <div class="sort-row"><label for="sortSel">Ordenar</label>
+        <select class="input" id="sortSel">
+          <option value="order">Ordem de lançamento</option>
+          <option value="desc">Maior preço primeiro</option>
+          <option value="asc">Menor preço primeiro</option>
+          <option value="name">Nome, de A a Z</option>
+        </select>
+      </div>
+      <div class="filter-row" id="filterRow" role="group" aria-label="Mostrar itens de"></div>
+    </div>
+    <div class="panel" id="itemsPanel"><div id="itemsList"></div></div>
+  </section>
+
+  <!-- DIVISÃO -->
+  <section class="view" data-view="divisao" aria-labelledby="t-divisao">
+    <h1 class="view-title" id="t-divisao">Quanto cada um paga</h1>
+    <p class="view-lead no-print">Ajuste a taxa e as cobranças. Tudo fecha no centavo.</p>
+    <div class="panel no-print">
+      <h2>Taxa e cobranças</h2>
+      <div class="row">
+        <label class="field grow"><span>Serviço (%)</span><input class="input num" id="feePct" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></label>
+        <label class="field grow"><span>Couvert por pessoa</span><input class="input money" id="couvert" inputmode="numeric" data-money></label>
+      </div>
+      <div class="field"><span style="display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:6px">Como dividir o serviço</span>
+        <div class="seg" role="group" aria-label="Como dividir o serviço">
+          <button type="button" data-feemode="prop">Pelo consumo</button>
+          <button type="button" data-feemode="equal">Igual</button>
+        </div>
+      </div>
+      <label class="field" style="margin-bottom:0"><span>Outras cobranças (divididas igual)</span><input class="input money" id="extra" inputmode="numeric" data-money></label>
+    </div>
+
+    <div class="panel">
+      <div class="grand"><div><div class="label">Total da conta</div><div class="value" id="grandValue">R$ 0,00</div></div></div>
+      <div class="breakdown" id="breakdown"></div>
+      <div id="splitAlert"></div>
+      <div class="share-row no-print">
+        <a class="btn btn-primary" id="shareWa" href="https://wa.me/" target="_blank" rel="noopener" style="text-decoration:none">Enviar no WhatsApp</a>
+        <button class="btn btn-quiet" id="copySummary">Copiar resumo</button>
+        <button class="btn btn-quiet" id="printBtn">Imprimir</button>
       </div>
     </div>
-    <div class="summary">
-      <div class="metric"><span>Subtotal</span><strong id="subtotal">R$ 0,00</strong></div>
-      <div class="metric"><span>Taxa</span><strong id="feeTotal">R$ 0,00</strong></div>
-      <div class="metric"><span>Total geral</span><strong id="grandTotal">R$ 0,00</strong></div>
-    </div>
-    <div id="results" style="margin-top:14px"></div>
-    <div id="balanceNotice" class="notice" style="display:none"></div>
-    <div class="actions no-print">
-      <button class="primary" id="printResult">🖨️ Imprimir / Salvar PDF</button>
-      <button class="ghost" id="resetAll">＋ Nova conta</button>
-    </div>
+    <div class="receipts" id="receipts"></div>
   </section>
 </div>
 
+<nav class="dock" aria-label="Navegação">
+  <div class="dock-inner">
+    <div class="dock-total">
+      <div><div class="t-label">Total da conta</div><div class="t-value" id="dockTotal">R$ 0,00</div></div>
+      <button class="fab" id="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Item</span></button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="pessoas">Pessoas <span class="count" id="cPeople">0</span></button>
+      <button class="tab" role="tab" data-tab="itens">Itens <span class="count" id="cItems">0</span></button>
+      <button class="tab" role="tab" data-tab="divisao">Divisão</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Folha: item -->
+<dialog class="sheet" id="itemSheet" aria-labelledby="itemSheetTitle">
+  <form class="sheet-body" id="itemForm" method="dialog" autocomplete="off">
+    <div class="grabber" aria-hidden="true"></div>
+    <h3 id="itemSheetTitle">Novo item</h3>
+    <label class="field"><span>Item</span><input class="input" id="iName" placeholder="Ex.: Pizza grande" maxlength="60" enterkeyhint="next"></label>
+    <label class="field"><span id="iPriceLabel">Preço</span><input class="input money" id="iPrice" inputmode="numeric" data-money></label>
+    <div class="field" style="margin-bottom:6px"><span style="display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:8px">Quem consumiu</span>
+      <div class="chips" id="iPeople"></div>
+    </div>
+    <div class="field" style="margin-top:14px">
+      <div class="seg" role="group" aria-label="Como dividir este item">
+        <button type="button" data-mode="equal">Partes iguais</button>
+        <button type="button" data-mode="parts">Partes diferentes</button>
+      </div>
+      <div class="weights" id="iWeights"></div>
+    </div>
+    <details class="extra" id="iExtra">
+      <summary>Quantidade e preço unitário</summary>
+      <div class="inline">
+        <span style="font-weight:600">Quantidade</span>
+        <div class="stepper"><button type="button" id="qMinus" aria-label="Diminuir quantidade">−</button><output id="iQty" class="num">1</output><button type="button" id="qPlus" aria-label="Aumentar quantidade">+</button></div>
+      </div>
+      <label class="check"><input type="checkbox" id="iUnit"> O preço informado é de uma unidade</label>
+      <p class="hint" id="iUnitHint"></p>
+    </details>
+    <div class="err" id="itemErr" role="alert"></div>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-danger" id="iDelete" hidden>Remover</button>
+      <button type="button" class="btn btn-quiet" data-close>Cancelar</button>
+      <button type="submit" class="btn btn-primary" id="iSave">Adicionar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Folha: opções da pessoa -->
+<dialog class="sheet" id="personSheet" aria-labelledby="personSheetTitle">
+  <div class="sheet-body">
+    <div class="grabber" aria-hidden="true"></div>
+    <h3 id="personSheetTitle"></h3>
+    <label class="field"><span>Nome</span><input class="input" id="pRename" maxlength="40"></label>
+    <label class="check"><input type="checkbox" id="pNoFee"> Não paga a taxa de serviço</label>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-danger" id="pRemove">Remover da mesa</button>
+      <button type="button" class="btn btn-primary" id="pSave">Salvar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Folha: menu -->
+<dialog class="sheet" id="menuSheet" aria-label="Mais opções">
+  <div class="sheet-body">
+    <div class="grabber" aria-hidden="true"></div>
+    <div class="menu-list">
+      <button type="button" id="mInstall" hidden>Instalar no celular</button>
+      <button type="button" id="mExample">Carregar um exemplo</button>
+      <button type="button" id="mClearItems">Apagar os itens</button>
+      <button type="button" class="danger" id="mReset">Começar uma conta nova</button>
+    </div>
+    <div class="sheet-actions"><button type="button" class="btn btn-quiet" data-close>Fechar</button></div>
+  </div>
+</dialog>
+
+<!-- Folha: perguntar texto / confirmar -->
+<dialog class="sheet" id="askSheet" aria-labelledby="askTitle">
+  <form class="sheet-body" method="dialog" id="askForm">
+    <div class="grabber" aria-hidden="true"></div>
+    <h3 id="askTitle"></h3>
+    <p class="hint" id="askText" style="margin:-6px 0 14px;font-size:1rem"></p>
+    <label class="field" id="askField"><span id="askLabel"></span><input class="input" id="askInput" maxlength="40"></label>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-quiet" value="cancel" data-close>Cancelar</button>
+      <button type="submit" class="btn btn-primary" id="askOk">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Folha: instalar no iPhone -->
+<dialog class="sheet" id="installSheet" aria-labelledby="installTitle">
+  <div class="sheet-body">
+    <div class="grabber" aria-hidden="true"></div>
+    <h3 id="installTitle">Instalar no iPhone</h3>
+    <ol class="install-steps" id="installSteps">
+      <li>Abra esta página no <b>Safari</b>.</li>
+      <li>Toque no botão <b>Compartilhar</b> (o quadrado com a seta para cima).</li>
+      <li>Escolha <b>Adicionar à Tela de Início</b> e toque em <b>Adicionar</b>.</li>
+    </ol>
+    <p class="hint">O ícone aparece junto com os outros apps e o Divisor abre em tela cheia, mesmo sem internet.</p>
+    <div class="sheet-actions"><button type="button" class="btn btn-primary" data-close>Entendi</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastUndo" hidden>Desfazer</button></div>
+
 <script>
-const state={people:[],roster:[],items:[],editingIndex:null,activeProfile:null};
-const STORAGE_KEY='divisorContasStateV1';
-const PROFILE_KEY='divisorContasProfilesV1';
-const THEME_KEY='divisorContasThemeV1';
-function saveState(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({
-      people:state.people,
-      roster:state.roster,
-      activeProfile:state.activeProfile,
-      items:state.items,
-      feePercent:$('feePercent')?.value ?? 10,
-      feeMode:$('feeMode')?.value ?? 'proportional',
-      extraCharge:$('extraCharge')?.value ?? 0,
-      splitType:$('splitType')?.value ?? 'equal'
-    }));
-    const status=$('saveStatus');
-    if(status)status.textContent='💾 Salvo neste dispositivo';
-  }catch(e){
-    const status=$('saveStatus');
-    if(status)status.textContent='⚠️ Não foi possível salvar';
+(() => {
+'use strict';
+const KEY = 'divisorContasV2', OLD_KEY = 'divisorContasStateV1', GROUPS = 'divisorContasGrupos', OLD_GROUPS = 'divisorContasProfilesV1', THEME = 'divisorContasThemeV1';
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
+const money = c => fmt.format((c || 0) / 100);
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+
+/* ---------- Estado ---------- */
+const blank = () => ({people:[], items:[], feePct:10, feeMode:'prop', couvert:0, extra:0, groupId:null, tab:'pessoas', sort:'order', filter:null});
+let S = load();
+
+function load(){
+  const v2 = store.get(KEY, null);
+  if (v2 && Array.isArray(v2.people)) return Object.assign(blank(), v2);
+  // migra a versão anterior do app
+  const old = store.get(OLD_KEY, null), s = blank();
+  if (old && Array.isArray(old.people)){
+    const ids = {};
+    s.people = old.people.map(n => { const id = uid(); ids[n] = id; return {id, name:n, present:true, noFee:false}; });
+    (old.items || []).forEach(it => {
+      const shares = {};
+      (it.participants || []).forEach(n => { if (ids[n]) shares[ids[n]] = it.type === 'custom' ? (Number(it.weights?.[n]) || 0) : 1; });
+      s.items.push({id:uid(), name:it.name, price:Math.round((Number(it.price) || 0) * 100), qty:it.qty || 1, unit:false, mode:it.type === 'custom' ? 'parts' : 'equal', shares});
+    });
+    s.feePct = Number(old.feePercent ?? 10); s.feeMode = old.feeMode === 'equal' ? 'equal' : 'prop';
+    s.extra = Math.round((Number(old.extraCharge) || 0) * 100);
   }
+  return s;
 }
-function loadState(){
-  try{
-    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
-    if(!saved)return;
-    if(Array.isArray(saved.people))state.people=saved.people;
-    if(Array.isArray(saved.roster))state.roster=saved.roster; else state.roster=[...state.people];
-    if(saved.activeProfile!==undefined)state.activeProfile=saved.activeProfile;
-    if(Array.isArray(saved.items))state.items=saved.items;
-    if(saved.feePercent!==undefined)$('feePercent').value=saved.feePercent;
-    if(saved.feeMode!==undefined)$('feeMode').value=saved.feeMode;
-    if(saved.extraCharge!==undefined)$('extraCharge').value=saved.extraCharge;
-    if(saved.splitType!==undefined)$('splitType').value=saved.splitType;
-  }catch(e){}
-}
-function clearSavedState(){
-  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+function save(){ store.set(KEY, S); }
+function groups(){
+  let g = store.get(GROUPS, null);
+  if (!g){ g = store.get(OLD_GROUPS, []).map(p => ({id:p.id, name:p.name, members:p.members || []})); store.set(GROUPS, g); }
+  return g;
 }
 
-const $=id=>document.getElementById(id);
-const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const selectedPeople=()=>[...document.querySelectorAll('#participantList input:checked')].map(x=>x.value);
-
-
-function getProfiles(){
-  try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'[]')}catch(e){return []}
+/* ---------- Cálculo em centavos ---------- */
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const fraction = (w, W) => { const g = gcd(w, W) || 1; return `${w / g}/${W / g}`; };
+// Divide "total" centavos pelos pesos, sem perder nenhum centavo (maiores restos).
+// Como allocate, mas o centavo que sobra vai primeiro para quem já pagou menos que o valor exato (err < 0).
+function allocateFair(total, weights, err){
+  const W = weights.reduce((a, b) => a + b, 0);
+  if (!(W > 0) || !weights.length) return {parts:weights.map(() => 0), exact:weights.map(() => 0)};
+  const exact = weights.map(w => total * w / W), parts = exact.map(Math.floor);
+  let rest = total - parts.reduce((a, b) => a + b, 0);
+  exact.map((r, i) => [r - parts[i] - err[i], i]).sort((a, b) => b[0] - a[0] || a[1] - b[1]).forEach(([, i]) => { if (rest > 0){ parts[i]++; rest--; } });
+  return {parts, exact};
 }
-function setProfiles(profiles){
-  try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profiles))}catch(e){}
+function allocate(total, weights){
+  const W = weights.reduce((a, b) => a + b, 0);
+  if (!(W > 0) || !weights.length) return weights.map(() => 0);
+  const raw = weights.map(w => total * w / W), out = raw.map(Math.floor);
+  let rest = total - out.reduce((a, b) => a + b, 0);
+  raw.map((r, i) => [r - Math.floor(r), i]).sort((a, b) => b[0] - a[0] || a[1] - b[1]).forEach(([, i]) => { if (rest > 0){ out[i]++; rest--; } });
+  return out;
 }
-function renderProfiles(){
-  const profiles=getProfiles();
-  $('profileSelect').innerHTML='<option value="">Selecione um perfil</option>'+profiles.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} (${p.members.length})</option>`).join('');
-  if(state.activeProfile)$('profileSelect').value=state.activeProfile;
-  $('activeProfileLabel').textContent=state.activeProfile?(profiles.find(p=>p.id===state.activeProfile)?.name||'Perfil selecionado'):'Nenhum perfil selecionado';
-  $('saveProfileChanges').style.display=state.activeProfile?'inline-block':'none';
-  $('profileList').innerHTML=profiles.length?profiles.map(p=>`<div class="profile-row"><span class="profile-name">👥 ${esc(p.name)}</span><span class="muted">${p.members.length} pessoas</span></div>`).join(''):'<div class="empty">Nenhum perfil salvo ainda.</div>';
-}
-function renderPresence(){
-  $('presenceList').innerHTML=state.roster.length?state.roster.map(p=>`<label class="presence-row"><input type="checkbox" ${state.people.includes(p)?'checked':''} onchange="togglePresence('${esc(p).replace(/'/g,"&#39;")}',this.checked)"> <span>${esc(p)}</span></label>`).join(''):'<div class="empty">Cadastre pessoas ou carregue um perfil.</div>';
-}
-function togglePresence(name,checked){
-  if(checked){if(!state.people.includes(name))state.people.push(name)}
-  else{
-    state.people=state.people.filter(p=>p!==name);
-    state.items.forEach(item=>item.participants=item.participants.filter(p=>p!==name));
-  }
-  renderPeople();
-}
-function saveCurrentProfile(update=false){
-  const name=update?(getProfiles().find(p=>p.id===state.activeProfile)?.name||''):(prompt('Nome do perfil (ex.: Grupo dos Invasores):')||'').trim();
-  if(!name)return;
-  const profiles=getProfiles();
-  if(update){
-    if(!state.roster.length)return alert('Adicione pelo menos uma pessoa ao perfil.');
-    const idx=profiles.findIndex(p=>p.id===state.activeProfile);
-    if(idx>=0)profiles[idx].members=[...state.roster];
-  }else{
-    if(!state.roster.length)return alert('Adicione pelo menos uma pessoa ao perfil.');
-    const existing=profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
-    if(existing){
-      if(!confirm('Já existe um perfil com esse nome. Deseja substituir a lista dele?'))return;
-      existing.members=[...state.roster];state.activeProfile=existing.id;
-    }else{
-      const id='profile_'+Date.now();
-      profiles.push({id,name,members:[...state.roster]});
-      state.activeProfile=id;
-    }
-  }
-  setProfiles(profiles);renderProfiles();saveState();
-  alert(update?'Perfil atualizado!':'Perfil salvo!');
-}
-function loadSelectedProfile(){
-  const id=$('profileSelect').value;if(!id)return alert('Selecione um perfil.');
-  if(state.items.length && !confirm('Carregar um perfil vai limpar os itens atuais. Deseja continuar?'))return;
-  const profile=getProfiles().find(p=>p.id===id);if(!profile)return;
-  state.activeProfile=profile.id;
-  state.roster=[...profile.members];
-  state.people=[...profile.members];
-  state.items=[];state.editingIndex=null;
-  renderPeople();renderProfiles();saveState();
-}
-function deleteSelectedProfile(){
-  const id=$('profileSelect').value||state.activeProfile;if(!id)return alert('Selecione um perfil.');
-  const profiles=getProfiles();const profile=profiles.find(p=>p.id===id);
-  if(!profile)return;
-  if(!confirm(`Excluir o perfil "${profile.name}"?`))return;
-  setProfiles(profiles.filter(p=>p.id!==id));
-  if(state.activeProfile===id){state.activeProfile=null}
-  renderProfiles();saveState();
-}
-function renderPeople(){
-  if(!state.roster.length)state.roster=[...state.people];
-  $('peopleList').innerHTML=state.people.length?state.people.map((p,i)=>`<div class="person-chip"><span style="flex:1">${esc(p)}</span><button class="danger small" onclick="removePerson(${i})">×</button></div>`).join(''):'<div class="empty">Nenhuma pessoa presente adicionada.</div>';
-  renderPresence();renderParticipants();renderItems();calculate();
-}
-function renderParticipants(){
-  $('participantList').innerHTML=state.people.length?state.people.map(p=>`<label><input type="checkbox" value="${esc(p)}" onchange="renderWeights()"> ${esc(p)}</label>`).join(''):'<span class="empty">Adicione pessoas primeiro.</span>';
-  renderWeights();
-}
-function renderWeights(){
-  const type=$('splitType').value;
-  $('customHelp').style.display=type==='custom'?'block':'none';
-  if(type!=='custom'){$('customWeights').innerHTML='';return}
-  const checked=selectedPeople();
-  $('customWeights').innerHTML=checked.map(p=>`<div class="grid" style="margin-top:6px"><label>${esc(p)}<input class="weight" data-person="${esc(p)}" type="number" min="0" step="0.5" value="1"></label></div>`).join('');
-}
-function addPerson(){
-  const name=$('personName').value.trim();
-  if(!name)return alert('Digite um nome.');
-  if(state.people.includes(name))return alert('Essa pessoa já está no grupo.');
-  state.people.push(name);if(!state.roster.includes(name))state.roster.push(name);$('personName').value='';
-renderPeople();
-}
-function removePerson(i){
-  const p=state.people[i];
-  const removed=state.people.splice(i,1)[0];state.roster=state.roster.filter(x=>x!==removed);
-  state.items.forEach(item=>item.participants=item.participants.filter(x=>x!==p));
-  renderPeople();
-}
-function addItem(){
-  const name=$('itemName').value.trim(),rawPrice=Number($('itemPrice').value),qty=Math.max(1,Number($('itemQty').value)||1),unitMode=$('unitMode').value,type=$('splitType').value,participants=selectedPeople();
-  const price=unitMode==='unit'?rawPrice*qty:rawPrice;
-  if(!name||!(price>0))return alert('Informe a descrição e um valor válido.');
-  if(!participants.length)return alert('Selecione pelo menos uma pessoa.');
-  let item;
-  if(type==='custom'){
-    const weights={};document.querySelectorAll('.weight').forEach(el=>weights[el.dataset.person]=Number(el.value)||0);
-    if(Object.values(weights).every(v=>v<=0))return alert('Informe pelo menos um peso maior que zero.');
-    item={name,price,qty,type,participants,weights};
-  }else item={name,price,qty,type,participants};
-  if(state.editingIndex===null) state.items.push(item); else state.items[state.editingIndex]=item;
-  state.editingIndex=null;
-  $('addItem').textContent='+ Adicionar item';
-  $('itemName').value='';$('itemPrice').value='';$('itemQty').value=1;renderItems();calculate();
-}
-function removeItem(i){state.items.splice(i,1);if(state.editingIndex===i)cancelEdit();renderItems();calculate()}
-function cancelEdit(){state.editingIndex=null;$('addItem').textContent='+ Adicionar item';$('itemName').value='';$('itemPrice').value='';$('itemQty').value=1;document.querySelectorAll('#participantList input').forEach(x=>x.checked=false);renderWeights();}
-function editItem(i){
-  const it=state.items[i];state.editingIndex=i;
-  $('itemName').value=it.name;$('itemPrice').value=it.price;$('itemQty').value=it.qty||1;$('unitMode').value='total';$('splitType').value=it.type;
-  renderParticipants();
-  document.querySelectorAll('#participantList input').forEach(x=>x.checked=it.participants.includes(x.value));
-  renderWeights();
-  if(it.type==='custom')document.querySelectorAll('.weight').forEach(el=>el.value=it.weights?.[el.dataset.person]??1);
-  $('addItem').textContent='✓ Salvar alterações';
-  $('itemName').scrollIntoView({behavior:'smooth',block:'center'});
-}
-function renderItems(){
-  $('itemsList').innerHTML=state.items.length?state.items.map((it,i)=>{
-    const mode=it.type==='individual'?'Individual':it.type==='custom'?'Por peso':'Igual entre selecionados';
-    return `<div class="item"><div class="item-top"><div><div class="item-title">${esc(it.name)}</div><div class="muted">${mode} • Quantidade: ${it.qty||1} • ${it.participants.map(esc).join(', ')}</div></div><div style="text-align:right"><strong>${money(it.price)}</strong><br><button class="secondary small no-print" onclick="editItem(${i})">Editar</button> <button class="danger small no-print" onclick="removeItem(${i})">Remover</button></div></div></div>`;
-  }).join(''):'<div class="empty">Nenhum item lançado ainda.</div>';
-}
-function calculate(){
-  saveState();
-  const totals=Object.fromEntries(state.people.map(p=>[p,0]));
-  let subtotal=0;
-  state.items.forEach(it=>{
-    subtotal+=it.price;
-    if(it.type==='custom'){
-      const weights=it.participants.reduce((s,p)=>s+(it.weights[p]||0),0);
-      it.participants.forEach(p=>{if(weights>0)totals[p]+=it.price*(it.weights[p]||0)/weights});
-    }else{
-      const share=it.price/it.participants.length;
-      it.participants.forEach(p=>totals[p]+=share);
-    }
+function compute(){
+  const present = S.people.filter(p => p.present), pids = new Set(present.map(p => p.id));
+  const per = {}; present.forEach(p => per[p.id] = {cons:0, exact:0, lines:[], fee:0, couvert:0, extra:0, total:0});
+  let subtotal = 0, orphan = 0; const orphans = [];
+  S.items.forEach(it => {
+    subtotal += it.price;
+    const ids = Object.keys(it.shares).filter(id => pids.has(id) && it.shares[id] > 0);
+    if (!ids.length){ orphan += it.price; orphans.push(it); return; }
+    const ws = ids.map(id => it.mode === 'parts' ? it.shares[id] : 1), W = ws.reduce((a, b) => a + b, 0);
+    // Centavos que sobram vão para quem, até aqui, recebeu menos do que o valor exato (difusão do erro).
+    const raw = ws.map(w => it.price * w / W), parts = raw.map(Math.floor);
+    let rest = it.price - parts.reduce((x, y) => x + y, 0);
+    ids.map((id, i) => [raw[i] - parts[i] - (per[id].cons - per[id].exact), i]).sort((x, y) => y[0] - x[0] || x[1] - y[1]).forEach(([, i]) => { if (rest > 0){ parts[i]++; rest--; } });
+    ids.forEach((id, i) => { per[id].cons += parts[i]; per[id].exact += it.price * ws[i] / W; per[id].lines.push({itemId:it.id, name:it.name, cents:parts[i], whole:ids.length === 1, frac:fraction(ws[i], W)}); });
   });
-  const percent=Math.max(0,Number($('feePercent').value)||0)/100;
-  const fee=subtotal*percent;
-  const extra=Math.max(0,Number($('extraCharge').value)||0);
-  const feeShares={...totals};
-  if($('feeMode').value==='equal'){
-    const each=state.people.length?(fee/state.people.length):0;
-    state.people.forEach(p=>feeShares[p]=each);
-  }else if(subtotal>0){
-    state.people.forEach(p=>feeShares[p]=fee*(totals[p]/subtotal));
-  }else state.people.forEach(p=>feeShares[p]=0);
-  const extraEach=state.people.length?extra/state.people.length:0;
-  const final={};
-  state.people.forEach(p=>final[p]=totals[p]+feeShares[p]+extraEach);
-  $('subtotal').textContent=money(subtotal);$('feeTotal').textContent=money(fee+extra);$('grandTotal').textContent=money(subtotal+fee+extra);
-  $('results').innerHTML=state.people.length?state.people.map(p=>`<div class="result"><div><strong>${esc(p)}</strong><div class="muted">Consumo: ${money(totals[p])} • Taxas: ${money(feeShares[p]+extraEach)}</div></div><div class="amount">${money(final[p])}</div></div>`).join(''):'<div class="empty">Adicione pessoas para ver o resultado.</div>';
-  const rounded=state.people.reduce((s,p)=>s+Math.round(final[p]*100),0)/100;
-  const total=Math.round((subtotal+fee+extra)*100)/100;
-  $('balanceNotice').style.display=state.people.length?'block':'none';
-  $('balanceNotice').textContent=rounded===total?'✓ A divisão fecha corretamente com o total geral.':'Confira os valores: pode existir diferença de arredondamento.';
-  window.lastSummary={totals,feeShares,final,subtotal,fee,extra,total};
+  const payers = present.filter(p => !p.noFee), base = payers.reduce((a, p) => a + per[p.id].cons, 0);
+  const pct = Math.max(0, Number(S.feePct) || 0);
+  const fee = Math.round(base * pct / 100);
+  const couvertTotal = S.couvert * present.length, grand = subtotal + fee + couvertTotal + S.extra;
+  const err = {}; present.forEach(p => err[p.id] = per[p.id].cons - per[p.id].exact);
+  const F = allocateFair(fee, payers.map(p => S.feeMode === 'equal' ? 1 : per[p.id].exact), payers.map(p => err[p.id]));
+  payers.forEach((p, i) => { per[p.id].fee = F.parts[i]; err[p.id] += F.parts[i] - F.exact[i]; });
+  const extraParts = allocateFair(S.extra, present.map(() => 1), present.map(p => err[p.id])).parts;
+  present.forEach((p, i) => {
+    const r = per[p.id]; r.couvert = S.couvert; r.extra = extraParts[i]; r.total = r.cons + r.fee + r.couvert + r.extra;
+    r.adjust = 0;
+  });
+  const sumPeople = present.reduce((a, p) => a + per[p.id].total, 0);
+  return {present, per, subtotal, fee, pct, couvertTotal, extra:S.extra, grand, orphan, orphans, sumPeople, closes: present.length > 0 && sumPeople + orphan === grand && orphan === 0};
 }
-function summaryText(){
-  const s=window.lastSummary;if(!s)return '';
-  let text='🍽️ RESUMO DA CONTA\n\n';
-  state.people.forEach(p=>text+=`• ${p}: ${money(s.final[p])}\n`);
-  text+=`\nSubtotal: ${money(s.subtotal)}\nTaxa de atendimento: ${money(s.fee)}\nOutras cobranças: ${money(s.extra)}\nTOTAL GERAL: ${money(s.total)}\n\nDividido pelo Divisor de Contas.`;
-  return text;
-}
-$('addPerson').onclick=addPerson;$('personName').addEventListener('keydown',e=>{if(e.key==='Enter')addPerson()});
-$('addItem').onclick=addItem;
-$('qtyPlus').onclick=()=>{$('itemQty').value=Math.max(1,(Number($('itemQty').value)||1)+1)};
-$('qtyMinus').onclick=()=>{$('itemQty').value=Math.max(1,(Number($('itemQty').value)||1)-1)};
-$('itemQty').oninput=()=>{$('itemQty').value=Math.max(1,Math.floor(Number($('itemQty').value)||1))};
-$('splitType').onchange=renderWeights;$('feePercent').oninput=calculate;$('feeMode').onchange=calculate;$('extraCharge').oninput=calculate;
-$('clearPeople').onclick=()=>{if(confirm('Limpar todas as pessoas?')){state.people=[];state.roster=[];state.items=[];state.activeProfile=null;clearSavedState();renderProfiles();renderPeople()}};
-$('clearItems').onclick=()=>{state.items=[];renderItems();calculate()};
-$('examplePeople').onclick=()=>{state.people=['Isabel','João','Maria','Pedro','Ana'];state.roster=[...state.people];state.activeProfile=null;renderProfiles();renderPeople()};
-$('resetAll').onclick=()=>{if(confirm('Reiniciar tudo?')){state.people=[];state.roster=[];state.items=[];state.activeProfile=null;clearSavedState();renderProfiles();$('feePercent').value=10;$('feeMode').value='proportional';$('extraCharge').value=0;$('personName').value='';$('itemName').value='';$('itemPrice').value='';$('itemQty').value=1;renderPeople()}};
 
-function openProfiles(){
-  $('profilePanel').classList.add('open');
-  $('profileBackdrop').classList.add('open');
-  $('profilePanel').setAttribute('aria-hidden','false');
-  document.body.classList.add('modal-open');
-}
-function closeProfiles(){
-  $('profilePanel').classList.remove('open');
-  $('profileBackdrop').classList.remove('open');
-  $('profilePanel').setAttribute('aria-hidden','true');
-  document.body.classList.remove('modal-open');
-}
-$('openProfiles').onclick=openProfiles;
-$('closeProfiles').onclick=closeProfiles;
-$('profileBackdrop').onclick=closeProfiles;
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProfiles()});
+/* ---------- Utilidades de interface ---------- */
+const hue = s => { let h = 0; for (const c of s) h = (h * 31 + c.codePointAt(0)) % 360; return h; };
+const initials = n => n.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const avatar = (p, cls = '') => `<span class="avatar ${cls}" style="--h:${hue(p.name)}" aria-hidden="true">${esc(initials(p.name))}</span>`;
+const person = id => S.people.find(p => p.id === id);
 
+function bindMoney(el){
+  el.addEventListener('input', () => { const c = parseInt(el.value.replace(/\D/g, '') || '0', 10); el.value = c ? money(c) : ''; el.dataset.cents = c; el.dispatchEvent(new Event('money')); });
+}
+const getCents = el => parseInt(el.dataset.cents || '0', 10);
+const setCents = (el, c) => { el.dataset.cents = c || 0; el.value = c ? money(c) : ''; };
+document.querySelectorAll('[data-money]').forEach(el => { bindMoney(el); el.placeholder = 'R$ 0,00'; });
 
-$('saveProfile').onclick=()=>saveCurrentProfile(false);
-$('saveProfileChanges').onclick=()=>saveCurrentProfile(true);
-$('loadProfile').onclick=loadSelectedProfile;
-$('deleteProfile').onclick=deleteSelectedProfile;
-$('themeToggle').onclick=()=>{
-  const dark=document.body.dataset.theme!=='dark';
-  document.body.dataset.theme=dark?'dark':'light';
-  $('themeToggle').textContent=dark?'🌙':'☀️';
-  try{localStorage.setItem(THEME_KEY,dark?'dark':'light')}catch(e){}
+let toastTimer, undoFn = null;
+function toast(text, undo, label = 'Desfazer'){
+  $('toastText').textContent = text; undoFn = undo || null; $('toastUndo').hidden = !undo; $('toastUndo').textContent = label;
+  $('toast').classList.add('show'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { $('toast').classList.remove('show'); undoFn = null; }, undo ? 5000 : 2200);
+}
+$('toastUndo').onclick = () => { if (undoFn){ undoFn(); undoFn = null; } $('toast').classList.remove('show'); };
+const snapshot = () => JSON.parse(JSON.stringify(S));
+const restore = snap => { S = snap; render(); };
+
+document.querySelectorAll('dialog [data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
+document.querySelectorAll('dialog.sheet').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+
+function ask({title, text = '', label = '', value = '', ok = 'Confirmar', danger = false, input = false}){
+  return new Promise(res => {
+    const d = $('askSheet');
+    $('askTitle').textContent = title; $('askText').textContent = text; $('askText').hidden = !text;
+    $('askField').hidden = !input; $('askLabel').textContent = label; $('askInput').value = value;
+    $('askOk').textContent = ok; $('askOk').className = 'btn ' + (danger ? 'btn-danger' : 'btn-primary');
+    d.returnValue = '';
+    const done = () => { d.removeEventListener('close', done); res(d.returnValue === 'ok' ? (input ? $('askInput').value.trim() : true) : null); };
+    d.addEventListener('close', done);
+    d.showModal(); if (input) setTimeout(() => $('askInput').focus(), 50);
+  });
+}
+$('askForm').addEventListener('submit', e => { e.preventDefault(); $('askSheet').close('ok'); });
+
+/* ---------- Navegação ---------- */
+function setTab(t, scroll = true){
+  S.tab = t;
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.dataset.view === t));
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  $('fab').querySelector('span').textContent = t === 'pessoas' ? 'Pessoa' : 'Item';
+  save(); if (scroll) window.scrollTo({top:0});
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+$('fab').onclick = () => { if (S.tab === 'pessoas'){ $('personName').focus(); } else openItem(); };
+
+/* ---------- Pessoas ---------- */
+$('addPersonForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('personName').value.trim().replace(/\s+/g, ' ');
+  if (!name){ $('personErr').textContent = 'Digite um nome para adicionar.'; return; }
+  if (S.people.some(p => p.name.toLowerCase() === name.toLowerCase())){ $('personErr').textContent = `${name} já está na mesa.`; return; }
+  S.people.push({id:uid(), name, present:true, noFee:false});
+  $('personName').value = ''; $('personErr').textContent = ''; render(); $('personName').focus();
+});
+$('personName').addEventListener('input', () => $('personErr').textContent = '');
+
+function renderPeople(){
+  const el = $('peopleList');
+  if (!S.people.length){
+    el.innerHTML = `<div class="empty"><strong>Ninguém na mesa ainda</strong><p>Digite o nome de cada pessoa acima. Você pode salvar o grupo para a próxima saída.</p></div>`;
+    return;
+  }
+  el.innerHTML = S.people.map(p => `
+    <div class="person ${p.present ? '' : 'absent'}" data-id="${p.id}">
+      ${avatar(p)}
+      <div class="person-name">${esc(p.name)}<small>${p.present ? (p.noFee ? 'Presente, sem taxa de serviço' : 'Presente') : 'Não veio hoje'}</small></div>
+      <label class="switch"><input type="checkbox" data-act="presence" ${p.present ? 'checked' : ''} aria-label="${esc(p.name)} está presente"><span></span></label>
+      <button class="more" data-act="options" aria-label="Opções de ${esc(p.name)}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+    </div>`).join('');
+}
+$('peopleList').addEventListener('change', e => {
+  if (e.target.dataset.act !== 'presence') return;
+  const p = person(e.target.closest('.person').dataset.id); p.present = e.target.checked; render();
+});
+let editingPerson = null;
+$('peopleList').addEventListener('click', e => {
+  const b = e.target.closest('[data-act="options"]'); if (!b) return;
+  editingPerson = person(b.closest('.person').dataset.id);
+  $('personSheetTitle').textContent = editingPerson.name; $('pRename').value = editingPerson.name; $('pNoFee').checked = !!editingPerson.noFee;
+  $('personSheet').showModal();
+});
+$('pSave').onclick = () => {
+  const n = $('pRename').value.trim().replace(/\s+/g, ' ');
+  if (n && !S.people.some(p => p !== editingPerson && p.name.toLowerCase() === n.toLowerCase())) editingPerson.name = n;
+  editingPerson.noFee = $('pNoFee').checked; $('personSheet').close(); render();
 };
-try{
-  const savedTheme=localStorage.getItem(THEME_KEY)||'light';
-  document.body.dataset.theme=savedTheme;
-  $('themeToggle').textContent=savedTheme==='dark'?'🌙':'☀️';
-}catch(e){}
-renderProfiles();
-
-$('printResult').onclick=()=>window.print();
-$('copyResult').onclick=async()=>{try{await navigator.clipboard.writeText(summaryText());$('copyResult').textContent='✓ Copiado';setTimeout(()=>$('copyResult').textContent='Copiar resumo',1300)}catch(e){prompt('Copie o resumo:',summaryText())}};
-$('shareWhatsapp').onclick=()=>{
-  const text=summaryText();
-  if(!state.people.length){alert('Adicione pelo menos uma pessoa antes de compartilhar.');return;}
-  const url='https://wa.me/?text='+encodeURIComponent(text);
-  window.open(url,'_blank');
+$('pRemove').onclick = () => {
+  const snap = snapshot(), p = editingPerson;
+  S.people = S.people.filter(x => x !== p); S.items.forEach(it => delete it.shares[p.id]);
+  $('personSheet').close(); render(); toast(`${p.name} saiu da mesa`, () => restore(snap));
 };
-loadState();
-if(!state.roster.length)state.roster=[...state.people];
-renderProfiles();
-renderPeople();
 
-// Tutorial em 5 telas rápidas
-const welcomeOverlay = $('welcomeOverlay');
-const tutorialPages = [...document.querySelectorAll('.tutorial-page')];
-const tutorialDots = [...document.querySelectorAll('.tutorial-dot')];
-const tutorialBack = $('tutorialBack');
-const tutorialNext = $('tutorialNext');
-const startApp = $('startApp');
-const dontShowWelcome = $('dontShowWelcome');
-let tutorialPage = 0;
-
-function showTutorialPage(page){
-  tutorialPage = Math.max(0, Math.min(4, page));
-  tutorialPages.forEach((el, i) => el.classList.toggle('active', i === tutorialPage));
-  tutorialDots.forEach((el, i) => el.classList.toggle('active', i <= Math.min(tutorialPage, 3)));
-  $('welcomeBadge').textContent = tutorialPage < 4 ? `PASSO ${tutorialPage + 1} DE 4` : 'TUDO PRONTO';
-  tutorialBack.style.visibility = tutorialPage === 0 ? 'hidden' : 'visible';
-  tutorialNext.style.display = tutorialPage === 4 ? 'none' : 'block';
-  startApp.textContent = 'Começar a dividir ✓';
-  $('welcomeFooter').style.display = tutorialPage === 4 ? 'flex' : 'none';
+/* Grupos */
+function renderGroups(){
+  const g = groups();
+  if (S.groupId && !g.some(x => x.id === S.groupId)) S.groupId = null;
+  $('groupSelect').innerHTML = `<option value="">${g.length ? 'Escolha um grupo' : 'Nenhum grupo salvo'}</option>` + g.map(x => `<option value="${esc(x.id)}">${esc(x.name)} (${x.members.length})</option>`).join('');
+  $('groupSelect').value = S.groupId || '';
+  const active = g.find(x => x.id === S.groupId);
+  $('groupActive').textContent = active ? `Usando: ${active.name}` : '';
+  $('updateGroup').hidden = $('deleteGroup').hidden = !active;
+  $('loadGroup').disabled = !g.length;
 }
-function closeTutorial(){
-  if(dontShowWelcome.checked) localStorage.setItem('divisorWelcomeSeen', '1');
-  welcomeOverlay.style.display = 'none';
-}
-tutorialBack.onclick = () => showTutorialPage(tutorialPage - 1);
-tutorialNext.onclick = () => showTutorialPage(tutorialPage + 1);
-startApp.onclick = closeTutorial;
-$('openWelcome').onclick = () => {
-  welcomeOverlay.style.display = 'flex';
-  showTutorialPage(0);
+$('groupSelect').onchange = () => { $('deleteGroup').hidden = !$('groupSelect').value && !S.groupId; };
+$('loadGroup').onclick = async () => {
+  const id = $('groupSelect').value, g = groups().find(x => x.id === id);
+  if (!g) return toast('Escolha um grupo para carregar');
+  if (S.items.length && !(await ask({title:'Carregar outro grupo?', text:'Os itens lançados nesta conta serão apagados.', ok:'Carregar e apagar itens', danger:true}))) return;
+  S.people = g.members.map(name => ({id:uid(), name, present:true, noFee:false})); S.items = []; S.groupId = g.id;
+  render(); toast(`Grupo ${g.name} carregado`);
 };
-if(localStorage.getItem('divisorWelcomeSeen') === '1') welcomeOverlay.style.display = 'none';
-showTutorialPage(0);
+$('saveGroupNew').onclick = async () => {
+  if (!S.people.length) return toast('Adicione pessoas antes de salvar um grupo');
+  const name = await ask({title:'Salvar como grupo', label:'Nome do grupo', input:true, ok:'Salvar grupo'});
+  if (!name) return;
+  const g = groups(), ex = g.find(x => x.name.toLowerCase() === name.toLowerCase());
+  if (ex && !(await ask({title:`Substituir ${ex.name}?`, text:'Já existe um grupo com esse nome. A lista dele será trocada pela atual.', ok:'Substituir'}))) return;
+  const members = S.people.map(p => p.name);
+  if (ex){ ex.members = members; S.groupId = ex.id; } else { const id = uid(); g.push({id, name, members}); S.groupId = id; }
+  store.set(GROUPS, g); render(); toast(`Grupo ${name} salvo`);
+};
+$('updateGroup').onclick = () => {
+  const g = groups(), x = g.find(y => y.id === S.groupId); if (!x) return;
+  x.members = S.people.map(p => p.name); store.set(GROUPS, g); render(); toast(`Grupo ${x.name} atualizado`);
+};
+$('deleteGroup').onclick = async () => {
+  const id = $('groupSelect').value || S.groupId, g = groups(), x = g.find(y => y.id === id); if (!x) return;
+  if (!(await ask({title:`Excluir o grupo ${x.name}?`, text:'As pessoas desta conta continuam aqui.', ok:'Excluir grupo', danger:true}))) return;
+  store.set(GROUPS, g.filter(y => y.id !== id)); if (S.groupId === id) S.groupId = null; render(); toast('Grupo excluído');
+};
 
+/* ---------- Itens ---------- */
+function renderItems(c){
+  const el = $('itemsList');
+  $('orphanAlert').innerHTML = c.orphans.length ? `<div class="alert" role="alert">${c.orphans.length === 1 ? `“${esc(c.orphans[0].name)}” está sem ninguém marcado` : `${c.orphans.length} itens estão sem ninguém marcado`} (${money(c.orphan)}). Toque no item para escolher quem consumiu.</div>` : '';
+  if (!S.items.length){
+    $('itemTools').hidden = true;
+    el.innerHTML = `<div class="empty"><strong>Nenhum item lançado</strong><p>${S.people.length ? 'Toque em “+ Item” e informe nome, preço e quem consumiu.' : 'Primeiro adicione as pessoas na aba Pessoas.'}</p>${S.people.length ? '<button class="btn btn-primary" data-act="new">+ Lançar o primeiro item</button>' : '<button class="btn btn-quiet" data-act="goPeople">Ir para Pessoas</button>'}</div>`;
+    return;
+  }
+  const orphanIds = new Set(c.orphans.map(o => o.id));
+  // Filtro por pessoa e ordenação
+  $('itemTools').hidden = false;
+  if (S.filter && !c.per[S.filter]) S.filter = null;
+  $('sortSel').value = S.sort || 'order';
+  $('filterRow').innerHTML = `<button type="button" class="chip all" data-filter="" aria-pressed="${!S.filter}">Todos</button>` +
+    c.present.map(p => `<button type="button" class="chip" data-filter="${p.id}" aria-pressed="${S.filter === p.id}">${avatar(p)}${esc(p.name)}</button>`).join('');
+  const mine = S.filter ? Object.fromEntries(c.per[S.filter].lines.map(l => [l.itemId, l.cents])) : null;
+  let list = S.items.map((it, i) => ({it, i})).filter(x => !mine || x.it.id in mine);
+  const coll = new Intl.Collator('pt-BR', {sensitivity:'base', numeric:true});
+  const key = x => mine ? mine[x.it.id] : x.it.price;
+  if (S.sort === 'desc') list.sort((a, b) => key(b) - key(a) || a.i - b.i);
+  else if (S.sort === 'asc') list.sort((a, b) => key(a) - key(b) || a.i - b.i);
+  else if (S.sort === 'name') list.sort((a, b) => coll.compare(a.it.name, b.it.name) || a.i - b.i);
+  if (!list.length){
+    const p = person(S.filter);
+    el.innerHTML = `<div class="empty"><strong>Nada marcado para ${esc(p.name)}</strong><p>Abra um item e toque no nome de ${esc(p.name)} para incluir.</p></div>`;
+    return;
+  }
+  el.innerHTML = list.map(x => x.it).map(it => {
+    const ppl = Object.keys(it.shares).filter(id => it.shares[id] > 0).map(person).filter(Boolean);
+    const here = ppl.filter(p => p.present);
+    const meta = orphanIds.has(it.id) ? 'Ninguém marcado' : (here.length === 1 ? here[0].name : `${here.length} pessoas${it.mode === 'parts' ? ', partes diferentes' : ''}`);
+    return `<button class="item ${orphanIds.has(it.id) ? 'orphan' : ''}" data-id="${it.id}">
+      <div class="avatar-stack" aria-hidden="true">${here.slice(0, 3).map(p => avatar(p, 'sm')).join('')}</div>
+      <div class="item-main"><div class="item-name">${it.qty > 1 ? `<span class="num">${it.qty}×</span> ` : ''}${esc(it.name)}</div><div class="item-meta">${esc(meta)}</div></div>
+      <div class="item-price">${mine ? `${money(mine[it.id])}<span class="item-part">de ${money(it.price)}</span>` : money(it.price)}</div></button>`;
+  }).join('') + (mine ? `<div class="filter-total"><span>Consumo de ${esc(person(S.filter).name)}</span><b>${money(c.per[S.filter].cons)}</b></div><p class="hint" style="margin-top:2px">Sem taxa e couvert. O total com tudo está na aba Divisão.</p>` : '');
+}
+$('sortSel').addEventListener('change', () => { S.sort = $('sortSel').value; render(); });
+$('filterRow').addEventListener('click', e => { const b = e.target.closest('[data-filter]'); if (!b) return; S.filter = b.dataset.filter || null; render(); });
+$('itemsList').addEventListener('click', e => {
+  const a = e.target.closest('[data-act]');
+  if (a?.dataset.act === 'new') return openItem();
+  if (a?.dataset.act === 'goPeople') return setTab('pessoas');
+  const b = e.target.closest('.item'); if (b) openItem(b.dataset.id);
+});
+
+/* Folha de item */
+let draft = null;
+function openItem(id){
+  if (!S.people.some(p => p.present)){ setTab('pessoas'); return toast('Adicione quem está na mesa primeiro'); }
+  const it = id ? S.items.find(x => x.id === id) : null;
+  draft = it ? JSON.parse(JSON.stringify(it)) : {id:null, name:'', price:0, qty:1, unit:false, mode:'equal', shares:{}};
+  $('itemSheetTitle').textContent = it ? 'Editar item' : 'Novo item';
+  $('iSave').textContent = it ? 'Salvar alterações' : 'Adicionar';
+  $('iDelete').hidden = !it;
+  $('iName').value = draft.name;
+  setCents($('iPrice'), draft.unit ? Math.round(draft.price / draft.qty) : draft.price);
+  $('iUnit').checked = !!draft.unit; $('iQty').value = draft.qty;
+  $('iExtra').open = draft.qty > 1 || draft.unit;
+  $('itemErr').textContent = '';
+  renderDraft();
+  $('itemSheet').showModal();
+  if (!it) setTimeout(() => $('iName').focus(), 60);
+}
+const draftTotal = () => $('iUnit').checked ? getCents($('iPrice')) * draft.qty : getCents($('iPrice'));
+function renderDraft(){
+  const present = S.people.filter(p => p.present);
+  const absentSel = S.people.filter(p => !p.present && draft.shares[p.id] > 0);
+  const all = present.length > 1 && present.every(p => draft.shares[p.id] > 0);
+  $('iPeople').innerHTML = (present.length > 1 ? `<button type="button" class="chip all" data-all aria-pressed="${all}">Todos</button>` : '') +
+    present.map(p => `<button type="button" class="chip" data-pid="${p.id}" aria-pressed="${draft.shares[p.id] > 0}">${avatar(p)}${esc(p.name)}</button>`).join('') +
+    absentSel.map(p => `<button type="button" class="chip" data-pid="${p.id}" aria-pressed="true" title="Não veio hoje">${avatar(p)}${esc(p.name)} <span class="tag">ausente</span></button>`).join('');
+  document.querySelectorAll('#itemSheet [data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === draft.mode));
+  $('iPriceLabel').textContent = $('iUnit').checked ? 'Preço de uma unidade' : (draft.qty > 1 ? `Preço total (${draft.qty} unidades)` : 'Preço');
+  $('iQty').value = draft.qty;
+  const tot = draftTotal();
+  $('iUnitHint').textContent = $('iUnit').checked && tot ? `Total do item: ${money(tot)}` : '';
+  const sel = present.filter(p => draft.shares[p.id] > 0);
+  const parts = allocate(tot, sel.map(p => draft.mode === 'parts' ? draft.shares[p.id] : 1));
+  if (draft.mode === 'parts' && sel.length){
+    $('iWeights').innerHTML = sel.map((p, i) => `<div class="weight-row" data-pid="${p.id}">${avatar(p)}<span class="nm">${esc(p.name)}</span>
+      <div class="stepper"><button type="button" data-w="-1" aria-label="Menos uma parte para ${esc(p.name)}">−</button><output class="num">${draft.shares[p.id]}</output><button type="button" data-w="1" aria-label="Mais uma parte para ${esc(p.name)}">+</button></div>
+      <span class="val">${money(parts[i])}</span></div>`).join('') + `<p class="hint">Cada “+” é uma parte a mais. Ex.: 2 e 1 dividem R$ 30 em R$ 20 e R$ 10.</p>`;
+  } else {
+    $('iWeights').innerHTML = sel.length > 1 && tot ? `<p class="hint">${money(parts[0])} para cada um${parts.some(x => x !== parts[0]) ? ' (centavos distribuídos)' : ''}.</p>` : '';
+  }
+}
+$('iPeople').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  const present = S.people.filter(p => p.present);
+  if (b.hasAttribute('data-all')){
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    present.forEach(p => { if (on) draft.shares[p.id] = draft.shares[p.id] > 0 ? draft.shares[p.id] : 1; else delete draft.shares[p.id]; });
+  } else {
+    const id = b.dataset.pid; if (draft.shares[id] > 0) delete draft.shares[id]; else draft.shares[id] = 1;
+  }
+  $('itemErr').textContent = ''; renderDraft();
+});
+document.querySelectorAll('#itemSheet [data-mode]').forEach(b => b.onclick = () => { draft.mode = b.dataset.mode; renderDraft(); });
+$('iWeights').addEventListener('click', e => {
+  const b = e.target.closest('[data-w]'); if (!b) return;
+  const id = b.closest('.weight-row').dataset.pid; draft.shares[id] = Math.max(1, Math.min(20, draft.shares[id] + Number(b.dataset.w))); renderDraft();
+});
+$('qMinus').onclick = () => { draft.qty = Math.max(1, draft.qty - 1); renderDraft(); };
+$('qPlus').onclick = () => { draft.qty = Math.min(99, draft.qty + 1); renderDraft(); };
+$('iUnit').onchange = renderDraft;
+$('iPrice').addEventListener('money', () => { $('itemErr').textContent = ''; renderDraft(); });
+$('iName').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('iPrice').focus(); } });
+$('itemForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('iName').value.trim(), price = draftTotal();
+  const chosen = Object.keys(draft.shares).filter(id => draft.shares[id] > 0);
+  if (!name) return $('itemErr').textContent = 'Dê um nome ao item.', $('iName').focus();
+  if (!(price > 0)) return $('itemErr').textContent = 'Informe o preço do item.', $('iPrice').focus();
+  if (!chosen.length) return $('itemErr').textContent = 'Marque pelo menos uma pessoa.';
+  const shares = {}; chosen.forEach(id => shares[id] = draft.mode === 'parts' ? draft.shares[id] : 1);
+  const it = {id:draft.id || uid(), name, price, qty:draft.qty, unit:$('iUnit').checked, mode:draft.mode, shares};
+  const i = S.items.findIndex(x => x.id === it.id);
+  if (i >= 0) S.items[i] = it; else S.items.push(it);
+  $('itemSheet').close(); render(); toast(i >= 0 ? 'Item atualizado' : `${name} adicionado`);
+});
+$('iDelete').onclick = () => {
+  const snap = snapshot(), it = S.items.find(x => x.id === draft.id);
+  S.items = S.items.filter(x => x.id !== draft.id); $('itemSheet').close(); render();
+  toast(`${it.name} removido`, () => restore(snap));
+};
+
+/* ---------- Divisão ---------- */
+$('feePct').addEventListener('input', () => {
+  const el = $('feePct'); el.value = el.value.replace(/[^\d,.]/g, '');
+  S.feePct = Math.max(0, Math.min(100, parseFloat(el.value.replace(',', '.')) || 0)); render(true);
+});
+$('feePct').addEventListener('blur', () => { $('feePct').value = String(S.feePct).replace('.', ','); });
+$('couvert').addEventListener('money', () => { S.couvert = getCents($('couvert')); render(true); });
+$('extra').addEventListener('money', () => { S.extra = getCents($('extra')); render(true); });
+document.querySelectorAll('[data-feemode]').forEach(b => b.onclick = () => { S.feeMode = b.dataset.feemode; render(); });
+
+function renderSplit(c){
+  $('grandValue').textContent = money(c.grand);
+  const rows = [['Itens', c.subtotal]];
+  if (c.fee) rows.push([`Serviço ${String(c.pct).replace('.', ',')}%`, c.fee]);
+  if (c.couvertTotal) rows.push([`Couvert (${c.present.length} × ${money(S.couvert)})`, c.couvertTotal]);
+  if (c.extra) rows.push(['Outras cobranças', c.extra]);
+  $('breakdown').innerHTML = rows.map(([k, v]) => `<span>${esc(k)}</span><b>${money(v)}</b>`).join('');
+  let alert = '';
+  if (!c.present.length) alert = '';
+  else if (c.orphan) alert = `<div class="alert" role="alert">${money(c.orphan)} em itens sem ninguém marcado. A soma das pessoas ainda não fecha com o total.</div>`;
+  else if (S.items.length) alert = `<div class="alert ok">A soma de todos fecha exatamente com o total da conta.</div>`;
+  $('splitAlert').innerHTML = alert;
+  document.querySelectorAll('[data-feemode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.feemode === S.feeMode));
+
+  if (!c.present.length){
+    $('receipts').innerHTML = `<div class="panel empty"><strong>Sem pessoas presentes</strong><p>Adicione quem está na mesa para ver quanto cada um paga.</p><button class="btn btn-quiet" data-go="pessoas">Ir para Pessoas</button></div>`;
+    return;
+  }
+  const sorted = [...c.present].sort((a, b) => c.per[b.id].total - c.per[a.id].total);
+  $('receipts').innerHTML = sorted.map(p => {
+    const r = c.per[p.id];
+    const lines = r.lines.map(l => `<div class="rline"><span>${esc(l.name)}${l.whole ? '' : ` (${l.frac})`}</span><span>${money(l.cents)}</span></div>`).join('') || '<div class="rline muted"><span>Nenhum item marcado</span><span></span></div>';
+    return `<article class="receipt">
+      <div class="receipt-head">${avatar(p)}<div class="who">${esc(p.name)}<small>${r.lines.length} ${r.lines.length === 1 ? 'item' : 'itens'}${p.noFee ? ', sem serviço' : ''}</small></div><div class="receipt-total">${money(r.total)}</div></div>
+      <details><summary><span class="open-label">Ver detalhes</span><span class="close-label">Ocultar detalhes</span></summary>
+        <hr class="rrule">${lines}<hr class="rrule">
+        <div class="rline muted"><span>Consumo</span><span>${money(r.cons)}</span></div>
+        ${r.fee ? `<div class="rline muted"><span>Serviço</span><span>${money(r.fee)}</span></div>` : ''}
+        ${r.couvert ? `<div class="rline muted"><span>Couvert</span><span>${money(r.couvert)}</span></div>` : ''}
+        ${r.extra ? `<div class="rline muted"><span>Outras cobranças</span><span>${money(r.extra)}</span></div>` : ''}
+        ${r.adjust ? `<div class="rline muted"><span>Ajuste de centavos</span><span>${r.adjust > 0 ? '+' : '−'}${money(Math.abs(r.adjust))}</span></div>` : ''}
+        <hr class="rrule"><div class="rline" style="font-weight:600"><span>Total</span><span>${money(r.total)}</span></div>
+      </details></article>`;
+  }).join('');
+}
+$('receipts').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) setTab(b.dataset.go); });
+
+function summary(){
+  const c = compute(); if (!c.present.length) return '';
+  let t = '*Divisão da conta*\n\n';
+  [...c.present].sort((a, b) => c.per[b.id].total - c.per[a.id].total).forEach(p => {
+    const r = c.per[p.id]; t += `*${p.name}: ${money(r.total)}*\n`;
+    r.lines.forEach(l => t += `  ${l.name}${l.whole ? '' : ` (${l.frac})`}: ${money(l.cents)}\n`);
+    const extras = []; if (r.fee) extras.push(`serviço ${money(r.fee)}`); if (r.couvert) extras.push(`couvert ${money(r.couvert)}`); if (r.extra) extras.push(`outras ${money(r.extra)}`);
+    if (extras.length) t += `  + ${extras.join(', ')}\n`;
+    t += '\n';
+  });
+  t += `Itens: ${money(c.subtotal)}\n`;
+  if (c.fee) t += `Serviço (${String(c.pct).replace('.', ',')}%): ${money(c.fee)}\n`;
+  if (c.couvertTotal) t += `Couvert: ${money(c.couvertTotal)}\n`;
+  if (c.extra) t += `Outras cobranças: ${money(c.extra)}\n`;
+  t += `*Total: ${money(c.grand)}*`;
+  if (c.orphan) t += `\n\nAtenção: ${money(c.orphan)} em itens sem ninguém marcado.`;
+  if (location.protocol === 'https:' && !/claude|claudeusercontent/.test(location.hostname)) t += `\n\nDividido com o Divisor de Contas: ${location.origin}${location.pathname}`;
+  return t;
+}
+$('copySummary').onclick = async () => {
+  const t = summary(); if (!t) return toast('Adicione pessoas antes de copiar');
+  try { await navigator.clipboard.writeText(t); toast('Resumo copiado'); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Resumo copiado'); }
+};
+$('shareWa').addEventListener('click', e => { const t = summary(); if (!t){ e.preventDefault(); return toast('Adicione pessoas antes de enviar'); } $('shareWa').href = 'https://wa.me/?text=' + encodeURIComponent(t); });
+$('printBtn').onclick = () => { document.querySelectorAll('.receipt details').forEach(d => d.open = true); try { window.print(); } catch(e){ toast('Impressão indisponível aqui'); } };
+
+/* ---------- Menu ---------- */
+$('menuBtn').onclick = () => $('menuSheet').showModal();
+$('mExample').onclick = async () => {
+  $('menuSheet').close();
+  if ((S.people.length || S.items.length) && !(await ask({title:'Carregar o exemplo?', text:'A conta atual será substituída por uma mesa de exemplo.', ok:'Carregar exemplo'}))) return;
+  const snap = snapshot();
+  const names = ['Isabel', 'João', 'Maria', 'Pedro', 'Ana'];
+  const P = names.map(n => ({id:uid(), name:n, present:true, noFee:false}));
+  const all = Object.fromEntries(P.map(p => [p.id, 1]));
+  S = Object.assign(blank(), {tab:'itens', people:P, items:[
+    {id:uid(), name:'Pizza grande calabresa', price:7990, qty:1, unit:false, mode:'equal', shares:all},
+    {id:uid(), name:'Cerveja 600 ml', price:5400, qty:4, unit:true, mode:'parts', shares:{[P[1].id]:2, [P[3].id]:1, [P[4].id]:1}},
+    {id:uid(), name:'Suco de cajá', price:1200, qty:1, unit:false, mode:'equal', shares:{[P[0].id]:1}},
+    {id:uid(), name:'Refrigerante lata', price:1300, qty:2, unit:true, mode:'equal', shares:{[P[2].id]:1, [P[0].id]:1}},
+    {id:uid(), name:'Batata frita', price:3490, qty:1, unit:false, mode:'equal', shares:{[P[1].id]:1, [P[2].id]:1, [P[3].id]:1}}
+  ]});
+  render(); toast('Exemplo carregado', () => restore(snap));
+};
+$('mClearItems').onclick = () => { $('menuSheet').close(); if (!S.items.length) return toast('Não há itens para apagar'); const snap = snapshot(); S.items = []; render(); toast('Itens apagados', () => restore(snap)); };
+$('mReset').onclick = () => { $('menuSheet').close(); const snap = snapshot(); S = blank(); render(); toast('Conta nova', () => restore(snap)); };
+
+/* ---------- Tema ---------- */
+function applyTheme(t){ document.documentElement.dataset.theme = t; }
+let theme = store.get(THEME, null);
+if (theme !== 'dark' && theme !== 'light') theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+applyTheme(theme);
+$('themeBtn').onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(theme); store.set(THEME, theme); };
+
+/* ---------- Instalar como app ---------- */
+let installEvt = null;
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function refreshInstall(){ $('mInstall').hidden = standalone(); }
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; refreshInstall(); });
+window.addEventListener('appinstalled', () => { installEvt = null; refreshInstall(); toast('Divisor instalado no celular'); });
+$('mInstall').onclick = async () => {
+  $('menuSheet').close();
+  if (installEvt){ installEvt.prompt(); try { await installEvt.userChoice; } catch(e){} installEvt = null; refreshInstall(); }
+  else {
+    $('installTitle').textContent = isIOS ? 'Instalar no iPhone' : 'Instalar no celular';
+    $('installSteps').innerHTML = isIOS
+      ? '<li>Abra esta página no <b>Safari</b>.</li><li>Toque em <b>Compartilhar</b> (o quadrado com a seta para cima).</li><li>Escolha <b>Adicionar à Tela de Início</b> e toque em <b>Adicionar</b>.</li>'
+      : '<li>Abra esta página no <b>Chrome</b>.</li><li>Toque no menu <b>⋮</b> no canto de cima.</li><li>Escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>';
+    $('installSheet').showModal();
+  }
+};
+refreshInstall();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js');
+      const offer = w => toast('Nova versão do app disponível', () => w.postMessage('skipWaiting'), 'Atualizar');
+      if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        w && w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w); });
+      });
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloaded){ reloaded = true; location.reload(); } });
+    } catch(e){}
+  });
+}
+
+/* ---------- Render ---------- */
+function render(skipInputs){
+  const c = compute();
+  renderPeople(); renderGroups(); renderItems(c); renderSplit(c);
+  $('dockTotal').textContent = money(c.grand);
+  $('cPeople').textContent = S.people.filter(p => p.present).length;
+  $('cItems').textContent = S.items.length;
+  if (!skipInputs){ $('feePct').value = String(S.feePct).replace('.', ','); setCents($('couvert'), S.couvert); setCents($('extra'), S.extra); }
+  setTab(S.tab || 'pessoas', false);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('toast').classList.contains('show')) $('toast').classList.remove('show'); });
+window.__divisor = {compute, allocate, get state(){ return S; }};
+render();
+})();
 </script>
 </body>
 </html>
